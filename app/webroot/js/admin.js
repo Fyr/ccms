@@ -16,6 +16,7 @@ $(function () {
             $(this).accordion({active: false, heightStyle: "content" ,collapsible: true});
         }
     })
+    /*
     $('.date').datepicker({
         dateFormat: "dd.mm.yy",
         buttonImage: "img/calendar.png",
@@ -23,7 +24,8 @@ $(function () {
         buttonImageOnly: true,
         changeYear: true
     })
-
+    */
+/*
     var filter_is_visible = true
     $('#show-filter').on('click', function () {
         if (filter_is_visible) {
@@ -35,7 +37,7 @@ $(function () {
         filter_is_visible = !filter_is_visible
         return false
     })
-
+*/
     $('.open-fieldset').on('click', function () {
         var content = $(this).parent().next('.fieldset-content')
         if (content.is(':visible')) {
@@ -57,6 +59,7 @@ $(function () {
             return $(this).next('.popover-content').html()
         }
     })
+    /*
     var checkAll = true
     var check = $('.checkthis')
     var total = check.length
@@ -91,12 +94,11 @@ $(function () {
             text2 = wordCheck + total + " records"
         }
         $('#do-anithing small').html(text)
-        $('#selectAll').attr('data-original-title', text2)
+        $('.grid-chbx-select-all').attr('data-original-title', text2)
         Highlighted()
-
     })
 
-   $('#selectAll').on('change',function(){
+   $('.grid-chbx-select-all').on('change',function(){
         if ($(this).prop('checked')) {
             check.each(function(){
                 $(this).prop('checked', true)
@@ -113,9 +115,10 @@ $(function () {
        Highlighted()
        $(this).tooltip('show');
    })
+   */
 
 })
-
+/*
 function Highlighted(){
    $('.checkthis').each(function(){
        if ($(this).prop("checked")){
@@ -126,5 +129,4 @@ function Highlighted(){
        }
    })
 }
-
-
+*/

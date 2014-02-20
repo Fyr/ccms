@@ -13,6 +13,64 @@
 	margin: 0 auto 20px auto;
 }
 
+.grid [class^="icon"] {
+	width: 16px;
+	height: 16px;
+	background-repeat: no-repeat;
+	background-position: top left;
+	vertical-align: middle;
+	margin-top: 0px;
+	margin-right: 2px;
+}
+
+.grid .icon-accept-filter {
+	background-image: url("../img/filter_accept.png") !important;
+}
+
+.grid .icon-clear-filter {
+	background-image: url("../img/filter_cancel.png") !important;
+}
+
+.grid .icon-edit {
+	background-image: url("../img/edit.gif") !important;
+}
+
+.grid .icon-delete {
+	background-image: url("../img/del.gif") !important;
+}
+
+.grid .icon-add {
+	background-image: url("../img/add.gif") !important;
+}
+
+.grid .icon-filter-settings {
+	background-image: url("../img/filter_settings.png") !important;
+}
+
+.grid .icon-check {
+	background-image: url("../img/checked.png") !important;
+}
+
+.grid .icon-info {
+	background-image: url("../img/preview.gif") !important;
+}
+
+.grid .icon-first {
+	background-image: url("../img/first.gif") !important;
+}
+
+.grid .icon-next {
+	background-image: url("../img/next.gif") !important;
+}
+
+.grid .icon-last {
+	background-image: url("../img/last.gif") !important;
+}
+
+.grid .icon-prev {
+	background-image: url("../img/prev.gif") !important;
+}
+
 .grid td.format-text span {
 	display: block;
 	width: 250px;
@@ -26,14 +84,16 @@
 	background: url("../img/desc.gif") no-repeat right bottom;
 }
 
+.grid tr.first a.active {
+	color: #fff;
+}
 .grid .asc {
 	padding-right: 16px;
 	background: url("../img/asc.gif") no-repeat right top;
 }
 
 .grid thead .first th {
-	padding: 5px;
-
+	padding: 4px;
 }
 
 .grid input, .grid select {
@@ -45,25 +105,28 @@
 	margin: 2px;
 }
 
-.grid input.biginput {
-	width: 80%;
+.grid input.big-input {
+	width: 95%;
 }
 
 .grid .nowrap {
 	white-space: nowrap;
 }
 
-.grid > tbody > tr > td {
+.grid > thead > tr > th {
+	padding: 3px 5px;
+	vertical-align: middle;
+	text-align: center;
+}
+.grid > tbody > tr.grid-row > td {
 	border-left: 1px solid #ebeff2;
 	padding: 3px 5px;
 }
 
-.grid tbody tr:nth-child(odd) td {
+.grid .grid-row:nth-child(odd) td {
 	background: #ebeff2;
 	border-left: 1px solid #fff;
 }
-
-
 
 .table-gradient {
 	background-color: #496074;
@@ -79,49 +142,38 @@
 .table-gradient th{
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffB9C2C7', endColorstr='#ff496074', GradientType=0);
 }
-
-
-
-#last-tr table {
+.grid-footer table {
 	border-collapse: collapse;
-
 }
-
-#last-tr td {
+.grid-footer td {
 	color: #ffffff;
 	background: transparent;
 }
-#last-tr input {
+.grid-footer input {
 	font-size: 11px;
 	vertical-align: baseline;
 	height: 17px;
 	position: relative;
 	top: 1px;
-
+	padding: 0 2px;
 }
-
 .grid th, .grid th a {
 	color: #e9e9e9;
 }
-
 .grid th a:visited {
 	color: #fff;
 }
-
 .grid th a:hover {
 	color: #fff;
 }
-
 .grid thead .first {
 	/*background-image: linear-gradient(to bottom, #b9c2c7, #496074) !important;     */
 }
-
-.grid tbody tr:hover td {
+.grid .grid-row:hover td {
 	background-color: #d7dbde;
 }
-
-.grid tbody tr.seleted td {
-	background-color: #a2bdff;
+.grid > tbody > tr.grid-row-selected > td {
+	background-color: #a2bdff !important;
 }
 
 td.align-center {
@@ -132,8 +184,13 @@ td.align-right {
 	text-align: right;
 }
 
-.grid .date {
+.grid .grid-filter-date {
 	width: 80px;
+}
+
+.grid-filter-date + img {
+	display: inline-block;
+	cursor: pointer;
 }
 
 .grid table {
@@ -149,34 +206,23 @@ td.align-right {
 	vertical-align: baseline;
 }
 
-.grid table tr td span {
+.grid .grid-footer .grid-pagination span, .grid .grid-footer .grid-checked-actions small, .grid .grid-footer .grid-records-count span {
 	position: relative;
 	top: 1px;
+	margin: 0 3px;
 }
-
+/*
 .grid table tr td a i{
 	position: relative;
 	top: 1px;
-
 }
+*/
 .table-bordered > tbody > tr >td:first-child{
 	border-left: none !important;
-
 }
 .table-bordered .first th:first-child {
 	border-left: none !important;
 }
-#last-tr small{
+.grid-footer small{
 	vertical-align: top;
 }
-
-
-
-
-
-
-
-
-
-
-

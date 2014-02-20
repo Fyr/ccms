@@ -7,7 +7,6 @@ class AdminAuthController extends AdminController {
 
 	public function login() {
 		if ($this->request->is('post')) {
-			fdebug('1!');
 			if ($this->Auth->login()) {
 				return $this->redirect($this->Auth->redirect());
 			} else {

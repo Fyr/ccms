@@ -5,7 +5,7 @@ class AdminController extends AppController {
 	public $name = 'Admin';
 	public $components = array('Auth');
 	public $layout = 'admin';
-	// public $uses = array('Article');
+	public $uses = array('Article');
 
 	public $paginate = array(
 		'order' => 'id',
@@ -92,7 +92,9 @@ class AdminController extends AppController {
 	}
 
 	public function index() {
-		$aArticles = $this->Article->find('all', array('order' => array('id'), 'limit' => 10));
+		// $aArticles = $this->Article->find('all', array('conditions' => array('id >' => 80), 'order' => array('id'), 'limit' => 10));
+		$this->paginate = array('limit' => 10);
+		$aArticles = $this->paginate('Article');
 		$this->set('aArticles', $aArticles);
 	}
 

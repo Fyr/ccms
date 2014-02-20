@@ -8,12 +8,14 @@
 
 	echo $this->Html->css(array('bootstrap.min', 'jquery-ui-1.10.3.custom', 'admin', 'table'));
 	$aScripts = array(
-		'bootstrap',
 		'jquery-1.10.2.min',
 		'jquery-ui-1.10.3.custom.min',
+		'bootstrap.min',
 		'meiomask',
-		'admin'
+		'admin',
+		'grid'
 	);
+
 	echo $this->Html->script($aScripts);
 
 	echo $this->fetch('meta');
@@ -33,9 +35,9 @@
 	</nav>
 </header>
 <main>
-	<aside>
+	<!--aside>
 		<?=$this->element('admin_sb')?>
-	</aside>
+	</aside-->
 	<section class="table-column container-fluid">
 		<div class="row-fluid">
 			<?=$this->Session->flash()?>
