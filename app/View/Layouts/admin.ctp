@@ -9,6 +9,7 @@
 	echo $this->Html->css(array('bootstrap.min', 'jquery-ui-1.10.3.custom', 'admin', 'table'));
 	$aScripts = array(
 		'jquery-1.10.2.min',
+		'jquery.cookie',
 		'jquery-ui-1.10.3.custom.min',
 		'bootstrap.min',
 		'meiomask',

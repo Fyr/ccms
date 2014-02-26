@@ -1,28 +1,35 @@
 /* TODO:
-- filter values
 - events and callbacks
-- handle filters
-- handle pagination (icons, page, limit)
-- refactor $('self.container + ' .someclass') => $('.someclass', $self)
-- refactor self.settings.pagination => self.paging
-- refactor all code into modules
+- refactor all code into modules (especiially filters)
+- replace URL with  param values, not concat
+- replace .first with .grid-header
 */
-Grid = function(container, columns, data, settings, actions) {
+Grid = function(config) {
 	var self = this;
 
-	// self.container = ;
-	$self = $(container);
+	self.container = config.container;
+	$self = $(config.container);
 
 	self.columns = [];
 	self.data = [];
-	self.model = 'Article';
 	self.settings = {
+		model: '',
 		primaryKey: 'id',
 		baseURL: window.location.href,
 		checkRecords: true,
 		showActions: true,
-		perPageList: [5, 10, 20, 50, 100, 1000],
-		pagination: {curr: 0, total: 0, count: ''}
+		sort: '',
+		direction: '',
+		valueDiv: ':',
+		paramDiv: '/',
+		urlDiv: '/'
+	};
+	self.paging = {
+		curr: 0,
+		total: 0,
+		count: '',
+		limit: 0,
+		perPageList: [10, 20, 50, 100, 1000]
 	};
 	self.actions = {
 		table: [
@@ -38,23 +45,39 @@ Grid = function(container, columns, data, settings, actions) {
 			{icon: 'icon-star', label: 'Default Действие 2'}
 		]
 	};
+	self.filters = {};
+	self.defaults = {page: 1, sort: '', direction: 'asc', limit: 10};
 
-	this.init = function(container, columns, data, settings, actions) {
-		self.initColumns(columns);
-		self.initSettings(settings);
-		self.initActions(actions);
-		self.setData(data);
+	this.init = function(config) {
+		self.setData(config.data);
+
+		self.initDefaults(config.defaults);
+		self.initSettings(config.settings);
+		self.initColumns(config.columns);
+		self.initPaging(config.paging);
+		self.initActions(config.actions);
+		self.initFilters(config.filters);
+
 		self.render();
+
 		self.bindCheckAll();
 		self.bindCheckboxes();
 		self.bindFilter();
-		self.bindPagination();
+		self.bindPaging();
+		self.bindSorting();
+		self.bindTooltips();
 	}
 
 	this.initColumns = function(columns) {
 		self.columns = columns;
 		for(var i = 0; i < self.columns.length; i++) {
 			var col = self.columns[i];
+			if (col.key.indexOf('.') == -1) {
+				self.columns[i].key = self.settings.model + '.' + col.key;
+				// self.columns[i].model = self.settings.model;
+			} else {
+
+			}
 			if (typeof(col.format) != 'undefined') {
 				if (col.format == 'bool' || col.format == 'date' || col.format == 'datetime') {
 					self.columns[i].align = 'center';
@@ -67,11 +90,104 @@ Grid = function(container, columns, data, settings, actions) {
 			if (typeof(col.align) == 'undefined') {
 				self.columns[i].align = 'left';
 			}
+			if (typeof(col.showFilter) == 'undefined') {
+				self.columns[i].showFilter = true;
+			}
+			/*
+			if (typeof(col.sort) == 'undefined') {
+				self.columns[i].sorting = 'asc';
+			}
+			*/
+			if (typeof(col.showSorting) == 'undefined') {
+				self.columns[i].showSorting = true;
+			}
 		}
 	}
 
+	this.initDefaults = function(settings) {
+		self.defaults = $.extend(self.defaults, settings);
+	}
+
 	this.initSettings = function(settings) {
-		self.settings  = $.extend(self.settings, settings);
+		self.settings = $.extend(self.settings, self.defaults, self.cookie(), settings);
+		if (!self.settings.model) {
+			if (typeof(self.data[0]) != 'undefined') {
+				for(var i in self.data[0]) {
+					self.settings.model = i;
+					break;
+				}
+			}
+		}
+		if (!self.settings.model) {
+			alert('Cannot determine model from rowset! Please specify model property in config');
+		}
+		if (self.settings.primaryKey.indexOf('.') == -1) {
+			self.settings.primaryKey = self.settings.model + '.' + self.settings.primaryKey;
+		}
+		if (!self.defaults.sort) {
+			self.defaults.sort = self.settings.primaryKey;
+		}
+		if (!self.settings.sort) {
+			self.settings.sort = self.settings.primaryKey;
+		}
+	}
+
+	this.initPaging = function(paging) {
+		self.paging = $.extend(self.paging, paging);
+		if (!self.paging.curr) {
+			self.paging.curr = 1;
+		}
+	}
+
+	this.initActions = function(actions) {
+		self.actions = $.extend(self.actions, actions);
+		for(var i in self.actions) {
+			for(var j = 0; j < self.actions[i].length; j++) {
+				if (typeof(self.actions[i][j].href) == 'undefined') {
+					self.actions[i][j].href = 'javascript:void(0)';
+				}
+				if (typeof(self.actions[i][j].class) == 'undefined') {
+					self.actions[i][j].class = '';
+				}
+			}
+		}
+	}
+
+	this.getURLParams = function(){
+		var params = {}, col, cols = [], re, url = window.location.href;
+		for(var i = 0; i < self.columns.length; i++) {
+			cols.push(self.columns[i].key);
+		}
+		cols.push('page');
+		cols.push('sort');
+		cols.push('direction');
+		cols.push('limit');
+		for(var i = 0; i < cols.length; i++) {
+			re = '(\\' + self.settings.urlDiv + '|\\' + self.settings.paramDiv + ')' + cols[i].replace(/\./, '\\.') + self.settings.valueDiv + '([0-9a-z\\-\\.]+)';
+			re = new RegExp(re, 'ig');
+			re = re.exec(url);
+			if (re && re.length >= 2) {
+				params[cols[i]] = re[2];
+			}
+		}
+		return params;
+	}
+
+	this.initFilters = function(filters) {
+		self.filters = $.extend(self.filters, filters);
+		var params = self.getURLParams();
+		for(var i in params) {
+			if (typeof(self.settings[i]) != 'undefined') {
+				self.settings[i] = params[i];
+			}
+		}
+		for(var i in params) {
+			for(var j = 0; j < self.columns.length; j++) {
+				if (self.columns[j].key == i) {
+					self.filters[i] = params[i];
+				}
+			}
+		}
 	}
 
 	this.setData = function(data) {
@@ -105,20 +221,6 @@ Grid = function(container, columns, data, settings, actions) {
 		return html;
 	}
 
-	this.initActions = function(actions) {
-		self.actions = $.extend(self.actions, actions);
-		for(var i in self.actions) {
-			for(var j = 0; j < self.actions[i].length; j++) {
-				if (typeof(self.actions[i][j].href) == 'undefined') {
-					self.actions[i][j].href = 'javascript:void(0)';
-				}
-				if (typeof(self.actions[i][j].class) == 'undefined') {
-					self.actions[i][j].class = '';
-				}
-			}
-		}
-	}
-
 	this.renderTableActions = function() {
 		var html = '<th class="nowrap">';
 		html+= self.renderActions();
@@ -138,63 +240,99 @@ Grid = function(container, columns, data, settings, actions) {
 	this.renderColumns = function() {
 		var html = '';
 		for(var i = 0; i < self.columns.length; i++) {
-			html+= self.renderColumn(self.columns[i]);
+			html+= self.renderTableColumn(self.columns[i]);
 		}
 		return html;
 	}
 
+	this.renderTableColumn = function(col) {
+		return '<th class="nowrap" data-grid_col="' + col.key + '">' + self.renderColumn(col) + '</th>';
+	}
+
 	this.renderColumn = function(col) {
-		var html = '<th class="nowrap"><a href="#" class="' + col.sort + '">' + col.label + '</a></th>';
+		var sort = [];
+		if (col.showSorting) {
+			sort.push('grid-sortable');
+			if (self.settings.sort == col.key && (self.settings.direction == 'asc' || self.settings.direction == 'desc')) {
+				sort.push('grid-sortable-active');
+				sort.push('grid-sortable-' + self.settings.direction);
+			}
+		}
+		var html = '<a href="javascript:void(0)" class="' + sort.join(' ') + '">' + col.label + '</a>';
 		return html;
 	}
 
 	this.renderTableFilter = function() {
-		var html= '<tr class="grid-filter hide">';
+		var hide = (!self.settings.showFilter) ? ' hide' : ''
+		var html= '<tr class="grid-filter' + hide + '">';
 		html+= '<th></th>';
 		html+= '<th>';
-		html+= '<a class="icon-in-bg icon-accept-filter" href="#" rel="tooltip" title="Apply filter setting"></a>';
-		html+= '<a class="icon-in-bg icon-clear-filter" href="#" rel="tooltip" title="Clear filter setting"></a>';
+		html+= '<a class="icon-in-bg icon-accept-filter grid-filter-submit" href="javascript:void(0)" rel="tooltip" title="Apply filter setting"></a>';
+		html+= '<a class="icon-in-bg icon-clear-filter grid-filter-clear" href="javascript:void(0)" rel="tooltip" title="Clear filter setting"></a>';
 		html+= '</th>';
 		for(var i = 0; i < self.columns.length; i++) {
-			html+= self.renderTableFilterCell(self.columns[i]);
+			html+= self.renderTableFilterCell(self.columns[i], self.getFilterParamValue(self.columns[i]));
 		}
 		html+= '</tr>';
 		return html;
 	}
 
-	this.renderTableFilterCell = function(col) {
+	this.getFilterParamValue = function(col) {
+		var val = '';
+		if (typeof(self.filters[col.key]) != 'undefined') {
+			val = self.filters[col.key];
+			if (col.format == 'date') {
+				val = val.split('-').reverse().join('.');
+			}
+		}
+		return val;
+	}
+
+	this.renderTableFilterCell = function(col, val) {
 		var html = '<th>';
-		if (col.format == 'bool') {
-			html+= self.renderFilterBool(col);
-		} else if (col.format == 'date') {
-			html+= self.renderFilterDate(col);
-		} else {
-			html+= self.renderFilterString(col);
+		if (col.showFilter) {
+			if (col.format == 'bool') {
+				html+= self.renderFilterBool(col, val);
+			} else if (col.format == 'date') {
+				html+= self.renderFilterDate(col, val);
+			} else {
+				html+= self.renderFilterString(col, val);
+			}
 		}
 		html+= '</th>';
 		return html;
 	}
 
-	this.renderFilterBool = function(col) {
+	this.renderFilterBool = function(col, val) {
 		options = {'': '- any -', '1': 'yes', '0': 'no'};
-		return self.renderFilterSelect(col.key, options);
+		return self.renderFilterSelect(col, options, val);
 	}
 
-	this.renderFilterDate = function(col) {
-		return '<input type="text" class="grid-filter-input grid-filter-date">';
+	this.renderFilterDate = function(col, val) {
+		return '<input type="text" class="grid-filter-input grid-filter-date" name="' + self.getFilterName(col) + '" value="' + val + '">';
 	}
 
-	this.renderFilterString = function(col) {
-		return '<input type="text" class="big-input grid-filter-input" rel="tooltip" title="" data-original-title="Enter title mask (* - any char)">';
+	this.renderFilterString = function(col, val) {
+		return '<input type="text" class="big-input grid-filter-input" rel="tooltip" title="Enter title mask (* - any char)" name="' + self.getFilterName(col) + '" value="' + val + '">';
 	}
 
-	this.renderFilterSelect = function(name, options) {
-		var html = '<select class="input-small grid-filter-input" name="gridFilter[' + name + ']">';
+	this.renderFilterSelect = function(col, options, val) {
+		var html = '<select class="input-small grid-filter-input grid-filter-select" name="' + self.getFilterName(col) + '">';
+		var selected;
 		for (var i in options) {
-			html+= '<option value="' + i + '">' + options[i] + '</option>';
+			selected = (val == i) ? ' selected="selected"' : ''
+			html+= '<option value="' + i + '"' + selected + '>' + options[i] + '</option>';
 		}
 		html+= '</select>';
 		return html;
+	}
+
+	this.getFilterName = function(col) {
+		return 'gridFilter[' + col.key + ']';
+	}
+
+	this.cleanFilterName = function(name) {
+		return name.replace(/gridFilter/ig, '').replace(/\[/ig, '').replace(/\]/ig, '');
 	}
 
 	this.renderBody = function() {
@@ -208,15 +346,24 @@ Grid = function(container, columns, data, settings, actions) {
 	}
 
 	this.renderRow = function(rowData) {
-		var id = self.settings.primaryKey;
-		var keyValue = rowData[self.model][id];
-		var html = '<td class="align-center"><input type="checkbox" class="grid-chbx-row" name="gridChecked[]" value="' + keyValue + '"></td>';
+		var html = '<td class="align-center"><input type="checkbox" class="grid-chbx-row" name="gridChecked[]" value="' + self.getID(rowData) + '"></td>';
 		html+= self.renderTableRowActions(rowData);
+		var col;
 		for(var i = 0; i < self.columns.length; i++) {
-			fieldInfo = self.columns[i];
-			html+= self.renderTableCell(rowData[self.model][fieldInfo.key], fieldInfo, rowData);
+			col = self.columns[i];
+			html+= self.renderTableCell(self.getColVal(col, rowData), col, rowData);
 		}
 		return html;
+	}
+
+	this.getModelField = function(col_key) {
+		var field = col_key.split('.');
+		return {model: field[0], field: field[1]};
+	}
+
+	this.getColVal = function(column, rowData) {
+		var col = self.getModelField(column.key);
+		return rowData[col.model][col.field];
 	}
 
 	this.renderTableRowActions = function(rowData) {
@@ -230,10 +377,20 @@ Grid = function(container, columns, data, settings, actions) {
 		var html = '';
 		for(var i = 0; i < self.actions.row.length; i++) {
 			var actionData = self.actions.row[i];
-			var action = '<a href="' + actionData.href + '" title="' + actionData.label + '"><i class="' + actionData.icon + '"></i></a>';
+			var action = '<a href="' + self.getRowURL(rowData, actionData.href) + '" title="' + actionData.label + '"><i class="' + actionData.icon + '"></i></a>';
 			html+= action;
 		}
 		return html;
+	}
+
+	this.getID = function(rowData) {
+		var col = self.getModelField(self.settings.primaryKey);
+		return rowData[col.model][col.field];
+	}
+
+	this.getRowURL = function(rowData, href) {
+		var id = self.getID(rowData);
+		return href.replace(/\{\$id\}/ig, id);
 	}
 
 	this.renderTableCell = function(value, col, rowData) {
@@ -284,7 +441,7 @@ Grid = function(container, columns, data, settings, actions) {
 	this.renderFooter = function() {
 		var html = '<table><tbody><tr>';
 		html+= self.renderTableCheckedActions();
-		html+= self.renderTablePagination();
+		html+= self.renderTablePaging();
 		html+= self.renderTableRecordsCount();
 		html+= '</tr></tbody></table>';
 		return html;
@@ -310,8 +467,8 @@ Grid = function(container, columns, data, settings, actions) {
 		return html;
 	}
 
-	this.renderTablePagination = function() {
-		var html = '<td style="width: 40%" class="align-center grid-pagination">';
+	this.renderTablePaging = function() {
+		var html = '<td style="width: 40%" class="align-center grid-paging">';
 		html+= self.renderPageIcons();
 		html+= self.renderItemsPerPage();
 		html+= '</td>';
@@ -320,26 +477,28 @@ Grid = function(container, columns, data, settings, actions) {
 
 	this.renderPageIcons = function() {
 		var html = '';
-		var pagination = self.settings.pagination;
+		var pagination = self.paging;
 		if (pagination.total > 1) {
 			html = '<span>Страница</span>';
 			if (pagination.curr > 1) {
-				html+= '<a class="grid-pagination-first" href="javascript:void(0)" title="Go to first page"><i class="icon-first"></i></a>';
-				html+= '<a class="grid-pagination-prev" href="javascript:void(0)" title="Go to previous page"><i class="icon-prev"></i></a>';
+				html+= '<a class="grid-paging-first" href="javascript:void(0)" title="Go to first page" rel="tooltip-bottom"><i class="icon-first"></i></a>';
+				html+= '<a class="grid-paging-prev" href="javascript:void(0)" title="Go to previous page" rel="tooltip-bottom"><i class="icon-prev"></i></a>';
 			}
-			html+= '<input type="text" class="grid-pagination-page" value="' + pagination.curr + '" style="width: 17px;">';
+			html+= '<input type="text" class="grid-paging-page" value="' + pagination.curr + '" style="width: 17px;">';
 			if (pagination.curr < pagination.total) {
-				html+= '<a class="grid-pagination-next" href="javascript:void(0)" title="Go to next page"><i class="icon-next"></i></a>';
-				html+= '<a class="grid-pagination-last" href="javascript:void(0)" title="Go to last page"><i class="icon-last"></i></a>';
+				html+= '<a class="grid-paging-next" href="javascript:void(0)" title="Go to next page" rel="tooltip-bottom"><i class="icon-next"></i></a>';
+				html+= '<a class="grid-paging-last" href="javascript:void(0)" title="Go to last page" rel="tooltip-bottom"><i class="icon-last"></i></a>';
 			}
 		}
 		return html;
 	}
 
 	this.renderItemsPerPage = function() {
-		var html = '<span>по</span><select>';
-		for(var i = 0; i < self.settings.perPageList.length; i++) {
-			html+= '<option>' + self.settings.perPageList[i] + '</option>'
+		var html = '<span>по</span><select class="grid-paging-perpage">';
+		for(var i = 0; i < self.paging.perPageList.length; i++) {
+			var perPage = self.paging.perPageList[i];
+			var selected = (perPage == self.paging.limit) ? ' selected="selected"' : '';
+			html+= '<option value="' + perPage + '"' + selected + '>' + self.paging.perPageList[i] + '</option>';
 		}
 		html+= '</select><span>записей на странице</span>';
 		return html;
@@ -353,7 +512,7 @@ Grid = function(container, columns, data, settings, actions) {
 	}
 
 	this.renderRecordsCount = function() {
-		var pagination = self.settings.pagination;
+		var pagination = self.paging;
 		if (pagination.count) {
 			return '<span>' + pagination.count + '</span>';
 		}
@@ -393,40 +552,145 @@ Grid = function(container, columns, data, settings, actions) {
 		}
 	}
 
+	this.cookie = function(property, val) {
+		var grid = {};
+		grid[self.container] = {};
+		grid = $.extend(grid, JSON.parse($.cookie('grid')));
+		if (typeof(property) == 'undefined') {
+			return grid[self.container];
+		}
+		if (typeof(val) == 'undefined') {
+			return grid[self.container][property];
+		}
+		grid[self.container][property] = val;
+		return $.cookie('grid', JSON.stringify(grid), {expires: 365, path: '/'});
+	}
+
 	this.bindFilter = function() {
-		$(' .grid-show-filter', $self).click(function(){
+		$('.grid-show-filter', $self).click(function(){
 			$('.grid-filter', $self).toggleClass('hide');
+			self.cookie('showFilter', !$('.grid-filter', $self).hasClass('hide'));
 		});
 		$('.grid-filter-date', $self).datepicker({
 			dateFormat: "dd.mm.yy",
-			buttonImage: "img/calendar.png",
+			buttonImage: "/img/icons/calendar.png",
 			showOn: "button",
 			buttonImageOnly: true,
 			changeYear: true
 		});
+		$('.grid-filter-submit', $self).click(function(){
+			self.submitFilter();
+		});
+		$('.grid-filter-clear', $self).click(function(){
+			self.clearFilter();
+		});
 	}
 
-	this.bindPagination = function() {
-		$('.grid-pagination-page', $self).change(function(){
-			self.settings.pagination.curr = this.value;
+	this.bindPaging = function() {
+		$('.grid-paging-page', $self).change(function(){
+			self.paging.curr = this.value;
+			self.update();
+		});
+		$('.grid-paging-first', $self).click(function(){
+			self.paging.curr = 1;
+			self.update();
+		});
+		$('.grid-paging-last', $self).click(function(){
+			self.paging.curr = self.paging.total;
+			self.update();
+		});
+		$('.grid-paging-prev', $self).click(function(){
+			self.paging.curr = self.paging.curr - 1;
+			self.update();
+		});
+		$('.grid-paging-next', $self).click(function(){
+			self.paging.curr = self.paging.curr + 1;
+			self.update();
+		});
+		$('.grid-paging-perpage', $self).change(function(){
+			self.paging.limit = this.value;
 			self.update();
 		});
 	}
 
+	this.bindSorting = function(){
+		$('.grid-sortable', $self).click(function(){
+			var key = $(this).parent().data('grid_col');
+			self.settings.sort = key;
+			self.settings.direction = (!self.settings.direction || self.settings.direction == 'desc') ? 'asc' : 'desc';
+			self.update();
+		});
+	}
+
+	this.bindTooltips = function() {
+		$('*[rel="tooltip"]', $self).tooltip();
+	    $('*[rel="tooltip-bottom"]', $self).tooltip({
+	        placement: "bottom"
+	    });
+	}
+
+	this.submitFilter = function() {
+		self.update();
+	}
+
+	this.clearFilter = function() {
+		$('.grid-filter-input', $self).val('');
+		// self.update();
+	}
+
 	this.getURL = function() {
-		var url = self.settings.baseURL;
 		// handle pagination
-		var pagination = self.settings.pagination;
-		if (pagination.curr) {
-			url+= '/page:' + pagination.curr;
+		var pagination = self.paging;
+		var params = {};
+		if (self.paging.curr > self.defaults.page) {
+			params.page = self.paging.curr;
 		}
+		if (self.paging.limit != self.defaults.limit) {
+			params.limit = self.paging.limit;
+		}
+		// handle sorting
+		if ((self.settings.sort != self.defaults.sort) || (self.settings.direction != self.defaults.direction)) {
+			params.sort = self.settings.sort;
+			params.direction = self.settings.direction;
+		}
+		// handle filter
+		$('.grid-filter-input', $self).each(function(){
+			if (this.value) {
+				params[self.cleanFilterName(this.name)] = self.getFilterValue(this);
+			}
+		});
+
+		var url = self.settings.baseURL;
+		url+= self.settings.urlDiv + self.getFilterURL(params);
 		return url;
 	}
 
+	this.getFilterValue = function(e) {
+		var val = e.value;
+		if ($(e).hasClass('grid-filter-date')) {
+			val = val.split('.').reverse().join('-');
+		}
+		return escape(val);
+	}
+
+	this.getFilterURL = function(params) {
+		var pairs = [];
+		for(var key in params) {
+			// if (self.settings.baseURL) {
+				pairs.push(key + self.settings.valueDiv + params[key]);
+			// } else {
+				// TODO: replace URL parts
+				// var re = new RegExp('/' + param + self.valueDiv + '/');
+				// url.replace(re, )
+			// }
+		}
+		return pairs.join(self.settings.paramDiv);
+	}
+
 	this.update = function() {
-		console.log(self.getURL());
+		// console.log(self.getURL());
 		window.location.href = self.getURL();
 	}
 
-	self.init(container, columns, data, settings, actions);
+	self.init(config);
 }

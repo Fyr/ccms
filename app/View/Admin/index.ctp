@@ -144,10 +144,9 @@
 			</tbody>
 		</table-->
 		<div>
-			<?=$this->Paginator->numbers()?> !
-			<?=$this->Paginator->counter(array(
-				'format' => __('Shown {:start}-{:end} of {:count} records, Page {:page}, Pages: {:pages}') // Page: <b>{:page}/{:pages}</b>,
-			));?>
+			<?=print_r($this->request->named)?>
+			<?=Hash::get($this->request->named, 'limit')?>
+			#<?=$this->request->base?>#
 		</div>
 		<span id="grid"></span>
 	</div>
@@ -159,25 +158,37 @@ $(document).ready(function(){
 	var columns = [
 			{key: 'created', label: 'Created', sort: 'asc', tooltip: 'Sort field Aaa ascending (0..9, A..Z)', format: 'date'},
 			{key: 'title', label: 'Название', sort: 'asc', tooltip: 'Sort field Aaa ascending (0..9, A..Z)'},
-			{key: 'teaser', label: 'Текстовое поле 2', sort: 'asc', tooltip: 'Order by textfield2', format: 'text'},
+			{key: 'teaser', label: 'Текстовое поле 2', sort: 'asc', tooltip: 'Order by textfield2', format: 'text', showFilter: false},
 			{key: 'published', label: 'Published', sort: 'asc', tooltip: '', format: 'bool'},
 			{key: 'id', label: 'Numeric', sort: 'asc', tooltip: '', format: 'num'}
 		];
 	var actions = {
 		row: [
-			{href: '#', icon: 'icon-edit', label: 'Действие 1'},
-			{href: '#', icon: 'icon-delete', label: 'Действие 2'}
+			{href: '/admin/edit/{$id}', icon: 'icon-edit', label: 'Действие 1'},
+			{href: '/admin/delete/{$id}', icon: 'icon-delete', label: 'Действие 2'}
 		],
 		checked: [
 			{href: '#', icon: 'icon-edit', label: 'Действие 1'},
 			{href: '#', icon: 'icon-star', label: 'Действие 2'}
 		]
 	};
-	var pagination = {
+	var paging = {
 		curr: <?=$this->Paginator->counter(array('model' => 'Article', 'format' => '{:page}'))?>,
 		total: <?=$this->Paginator->counter(array('model' => 'Article', 'format' => '{:pages}'))?>,
-		count: '<?=$this->Paginator->counter(array('model' => 'Article', 'format' => __('Shown {:start}-{:end} of {:count} records')))?>'
+		count: '<?=$this->Paginator->counter(array('model' => 'Article', 'format' => __('Shown {:start}-{:end} of {:count} records')))?>',
+<?
+	$limit = Hash::get($this->request->named, 'limit');
+?>
+		limit: <?=($limit) ? $limit : 10?>
 	};
-	var table = new Grid('#grid', columns, data, {pagination: pagination, baseURL: '<?=$this->Html->url(array(''))?>'}, actions);
+	var config = {
+		container: '#grid',
+		columns: columns,
+		data: data,
+		paging: paging,
+		settings: {baseURL: '<?=$this->Html->url(array(''))?>', showFilter: true},
+		actions: actions
+	};
+	var table = new Grid(config);
 });
 </script>

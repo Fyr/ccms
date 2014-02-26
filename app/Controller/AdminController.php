@@ -93,6 +93,7 @@ class AdminController extends AppController {
 
 	public function index() {
 		// $aArticles = $this->Article->find('all', array('conditions' => array('id >' => 80), 'order' => array('id'), 'limit' => 10));
+		fdebug($this->request->named);
 		$this->paginate = array('limit' => 10);
 		$aArticles = $this->paginate('Article');
 		$this->set('aArticles', $aArticles);
