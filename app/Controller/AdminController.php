@@ -3,16 +3,13 @@ App::uses('AppController', 'Controller');
 
 class AdminController extends AppController {
 	public $name = 'Admin';
-	public $components = array('Auth');
+	public $components = array('Auth', 'Grid.PCGrid');
 	public $layout = 'admin';
 	public $uses = array('Article');
-
-	public $paginate = array(
-		'order' => 'id',
-		'limit' => 1
-	);
+	public $helpers = array('Paginator', 'Grid.PHGrid');
 
 	protected $scaffoldModel = ''; // for autimatic custom scaffold for model's CRUD
+	public $paginate;
 
 	public function beforeFilter() {
 		// Overload auth settings for admin area
@@ -93,9 +90,11 @@ class AdminController extends AppController {
 
 	public function index() {
 		// $aArticles = $this->Article->find('all', array('conditions' => array('id >' => 80), 'order' => array('id'), 'limit' => 10));
-		fdebug($this->request->named);
-		$this->paginate = array('limit' => 10);
-		$aArticles = $this->paginate('Article');
+		// $this->paginate = array('Article' => array('limit' => 10));
+		$this->paginate = array(
+			'fields' => array('id', 'created', 'title', 'teaser', 'published'),
+		);
+		$aArticles = $this->PCGrid->paginate('Article');
 		$this->set('aArticles', $aArticles);
 	}
 

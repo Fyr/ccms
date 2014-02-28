@@ -3,6 +3,7 @@
 - refactor all code into modules (especiially filters)
 - replace URL with  param values, not concat
 - replace .first with .grid-header
+- разобраться с тултипами для фильтра и поля
 */
 Grid = function(config) {
 	var self = this;
@@ -29,28 +30,28 @@ Grid = function(config) {
 		total: 0,
 		count: '',
 		limit: 0,
-		perPageList: [10, 20, 50, 100, 1000]
+		perPageList: [10, 20, 50, 100]
 	};
+
 	self.actions = {
 		table: [
-			{icon: 'icon-add', label: 'Add records'},
-			{icon: 'icon-filter-settings', class: 'grid-show-filter', label: 'Show filter settings'}
+			{class: 'icon-add', label: 'Add record'},
+			{class: 'icon-filter-settings grid-show-filter', label: 'Show filter settings'}
 		],
 		row: [
-			{icon: 'icon-edit', label: 'Default Действие 1'},
-			{icon: 'icon-delete', label: 'Default Действие 2'}
+			{class: 'icon-edit', label: 'Edit record'},
+			{class: 'icon-delete', label: 'Delete record'}
 		],
 		checked: [
-			{icon: 'icon-edit', label: 'Default Действие 1'},
-			{icon: 'icon-star', label: 'Default Действие 2'}
+			{class: 'icon-delete', label: 'Delete checked records'},
 		]
 	};
+
 	self.filters = {};
 	self.defaults = {page: 1, sort: '', direction: 'asc', limit: 10};
 
 	this.init = function(config) {
 		self.setData(config.data);
-
 		self.initDefaults(config.defaults);
 		self.initSettings(config.settings);
 		self.initColumns(config.columns);
@@ -78,10 +79,14 @@ Grid = function(config) {
 			} else {
 
 			}
+			if (typeof(col.label) == 'undefined') {
+				var key = col.key.split('.');
+				self.columns[i].label = key[1];
+			}
 			if (typeof(col.format) != 'undefined') {
-				if (col.format == 'bool' || col.format == 'date' || col.format == 'datetime') {
+				if (col.format == 'boolean' || col.format == 'date' || col.format == 'datetime') {
 					self.columns[i].align = 'center';
-				} else if (col.format == 'num')  {
+				} else if (col.format == 'integer')  {
 					self.columns[i].align = 'right';
 				}
 			} else {
@@ -137,17 +142,30 @@ Grid = function(config) {
 		if (!self.paging.curr) {
 			self.paging.curr = 1;
 		}
+		if (!self.paging.limit) {
+			self.paging.limit = self.defaults.limit;
+		}
 	}
 
 	this.initActions = function(actions) {
 		self.actions = $.extend(self.actions, actions);
+
 		for(var i in self.actions) {
 			for(var j = 0; j < self.actions[i].length; j++) {
-				if (typeof(self.actions[i][j].href) == 'undefined') {
-					self.actions[i][j].href = 'javascript:void(0)';
-				}
 				if (typeof(self.actions[i][j].class) == 'undefined') {
 					self.actions[i][j].class = '';
+				}
+
+				if (typeof(self.actions[i][j].href) == 'undefined') {
+					if (self.actions[i][j].class == 'icon-edit') {
+						self.actions[i][j].href = self.settings.baseURL + '/edit/{$id}';
+					} else if (self.actions[i][j].class == 'icon-add') {
+						self.actions[i][j].href = self.settings.baseURL + '/edit/';
+					} else if (self.actions[i][j].class == 'icon-delete') {
+						self.actions[i][j].href = self.settings.baseURL + '/delete/{$id}';
+					} else {
+						self.actions[i][j].href = 'javascript:void(0)';
+					}
 				}
 			}
 		}
@@ -232,7 +250,7 @@ Grid = function(config) {
 		var html = '';
 		for(var i = 0; i < self.actions.table.length; i++) {
 			var action = self.actions.table[i];
-			html+= '<a class="' + action.class + '" href="' + action.href + '" rel="tooltip" title="' + action.label + '"><i class="' + action.icon + '"></i></a>';
+			html+= '<a class="' + action.class + '" href="' + action.href + '" rel="tooltip" title="' + action.label + '"></a>';
 		}
 		return html;
 	}
@@ -291,10 +309,12 @@ Grid = function(config) {
 	this.renderTableFilterCell = function(col, val) {
 		var html = '<th>';
 		if (col.showFilter) {
-			if (col.format == 'bool') {
-				html+= self.renderFilterBool(col, val);
-			} else if (col.format == 'date') {
+			if (col.format == 'boolean') {
+				html+= self.renderFilterBoolean(col, val);
+			} else if (col.format == 'date' || col.format == 'datetime') {
 				html+= self.renderFilterDate(col, val);
+			} else if (col.format == 'integer') {
+				html+= self.renderFilterInteger(col, val);
 			} else {
 				html+= self.renderFilterString(col, val);
 			}
@@ -303,17 +323,22 @@ Grid = function(config) {
 		return html;
 	}
 
-	this.renderFilterBool = function(col, val) {
+	this.renderFilterBoolean = function(col, val) {
 		options = {'': '- any -', '1': 'yes', '0': 'no'};
 		return self.renderFilterSelect(col, options, val);
 	}
 
 	this.renderFilterDate = function(col, val) {
+		val = val.split('-').reverse().join('.');
 		return '<input type="text" class="grid-filter-input grid-filter-date" name="' + self.getFilterName(col) + '" value="' + val + '">';
 	}
 
+	this.renderFilterInteger = function(col, val) {
+		return '<input type="text" class="grid-filter-input grid-filter-int" name="' + self.getFilterName(col) + '" value="' + val + '">';
+	}
+
 	this.renderFilterString = function(col, val) {
-		return '<input type="text" class="big-input grid-filter-input" rel="tooltip" title="Enter title mask (* - any char)" name="' + self.getFilterName(col) + '" value="' + val + '">';
+		return '<input type="text" class="big-input grid-filter-input" rel="tooltip" name="' + self.getFilterName(col) + '" value="' + val + '">';
 	}
 
 	this.renderFilterSelect = function(col, options, val) {
@@ -337,9 +362,15 @@ Grid = function(config) {
 
 	this.renderBody = function() {
 		var html = '';
+		if (self.data.length) {
 		for(var i = 0; i < self.data.length; i++) {
 			html+= '<tr class="grid-row">';
 			html+= self.renderRow(self.data[i]);
+			html+= '</tr>';
+		}
+		} else {
+			html+= '<tr class="grid-row">';
+			html+= '<td class="grid-no-data" colspan="7">No records found</td>';
 			html+= '</tr>';
 		}
 		return html;
@@ -377,7 +408,7 @@ Grid = function(config) {
 		var html = '';
 		for(var i = 0; i < self.actions.row.length; i++) {
 			var actionData = self.actions.row[i];
-			var action = '<a href="' + self.getRowURL(rowData, actionData.href) + '" title="' + actionData.label + '"><i class="' + actionData.icon + '"></i></a>';
+			var action = '<a class="' + actionData.class + '" href="' + self.getRowURL(rowData, actionData.href) + '" title="' + actionData.label + '"></a>';
 			html+= action;
 		}
 		return html;
@@ -422,7 +453,7 @@ Grid = function(config) {
 		if (col.format == 'text') {
 			return '<span>' + value + '</span>';
 		}
-		if (col.format == 'bool') {
+		if (col.format == 'boolean') {
 			return (value) ? '<i class="icon-in-bg icon-check"></i>' : '';
 		}
 		if (col.key == 'teaser') {
@@ -448,19 +479,20 @@ Grid = function(config) {
 	}
 
 	this.renderTableCheckedActions = function() {
-		var html = '<td style="width: 30%">';
+		var html = '<td class="grid-checked-actions">';
 		html+= self.renderCheckedActions();
 		html+= '</td>';
 		return html;
 	}
 
 	this.renderCheckedActions = function() {
-		var html = '<div class="grid-checked-actions hide"><small></small><div class="btn-group">';
+		var html = '<div class="hide"><small></small><div class="btn-group">';
 		html+= '<a class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#"><span class="caret"></span></a>';
 		html+= '<ul class="dropdown-menu">';
 		for(var i = 0; i < self.actions.checked.length; i++) {
 			var action = self.actions.checked[i];
-			html+= '<li><a href="' + action.href + '"><i class="' + action.icon + '"></i> ' + action.label + '</a></li>';
+			var label = (action.icon) ? '<i class="' + action.icon + '"></i>' + action.label : action.label;
+			html+= '<li><a class="' + action.class + '" href="' + action.href + '">' + label + '</a></li>';
 		}
 		html+= '</ul>';
 		html+= '</div></div>';
@@ -468,9 +500,13 @@ Grid = function(config) {
 	}
 
 	this.renderTablePaging = function() {
-		var html = '<td style="width: 40%" class="align-center grid-paging">';
-		html+= self.renderPageIcons();
-		html+= self.renderItemsPerPage();
+		var html = '<td class="align-center grid-paging">';
+		if (self.paging.total > 1) {
+			html+= self.renderPageIcons();
+			html+= self.renderItemsPerPage();
+		} else {
+			// html+= '<div style="height: 16px;"></div>';
+		}
 		html+= '</td>';
 		return html;
 	}
@@ -494,18 +530,23 @@ Grid = function(config) {
 	}
 
 	this.renderItemsPerPage = function() {
-		var html = '<span>по</span><select class="grid-paging-perpage">';
-		for(var i = 0; i < self.paging.perPageList.length; i++) {
-			var perPage = self.paging.perPageList[i];
-			var selected = (perPage == self.paging.limit) ? ' selected="selected"' : '';
-			html+= '<option value="' + perPage + '"' + selected + '>' + self.paging.perPageList[i] + '</option>';
+		var html = '';
+		if (self.paging.total > 1) {
+			html = '<span>по</span><select class="grid-paging-perpage">';
+			for(var i = 0; i < self.paging.perPageList.length; i++) {
+				var perPage = self.paging.perPageList[i];
+				var selected = (perPage == self.paging.limit) ? ' selected="selected"' : '';
+				html+= '<option value="' + perPage + '"' + selected + '>' + self.paging.perPageList[i] + '</option>';
+			}
+			html+= '</select><span>записей на странице</span>';
 		}
-		html+= '</select><span>записей на странице</span>';
 		return html;
 	}
 
 	this.renderTableRecordsCount = function() {
-		var html = '<td style="width: 30%" class="align-right grid-records-count">';
+		// var style = (self.paging.total > 1 && self.paging.count) ? '' : ' style="height: 24px;"';
+		var style = '';
+		var html = '<td class="align-right grid-records-count">';
 		html+= self.renderRecordsCount();
 		html+= '</td>';
 		return html;
@@ -513,10 +554,10 @@ Grid = function(config) {
 
 	this.renderRecordsCount = function() {
 		var pagination = self.paging;
-		if (pagination.count) {
+		if (pagination.total > 1 && pagination.count) {
 			return '<span>' + pagination.count + '</span>';
 		}
-		return '';
+		return ''; //'<span>&nbsp;</span>';
 	}
 
 	this.bindCheckAll = function() {
@@ -544,9 +585,9 @@ Grid = function(config) {
 
 	this.updateCheckedActions = function() {
 		var checked = $('.grid-chbx-row:checked', $self).size();
-		$('.grid-checked-actions', $self).removeClass('hide');
+		$('.grid-checked-actions div', $self).removeClass('hide');
 		if (!checked) {
-			$('.grid-checked-actions', $self).addClass('hide');
+			$('.grid-checked-actions div', $self).addClass('hide');
 		} else {
 			$('.grid-checked-actions small', $self).html(checked + ' records checked');
 		}
@@ -576,7 +617,8 @@ Grid = function(config) {
 			buttonImage: "/img/icons/calendar.png",
 			showOn: "button",
 			buttonImageOnly: true,
-			changeYear: true
+			changeYear: true,
+			changeMonth: true
 		});
 		$('.grid-filter-submit', $self).click(function(){
 			self.submitFilter();

@@ -16,10 +16,12 @@ CakeLog::config('error', array(
 	'file' => 'error',
 ));
 
+CakePlugin::loadAll();
+
 define('DOMAIN_NAME', 'cakecms.dev');
 define('DOMAIN_TITLE', 'CakeCms.dev');
 define('AUTH_ERROR', __('Invalid username or password, try again'));
 
-function fdebug($data, $logFile = 'tmp.log', $lAppend = true) {
+function fdebug($data, $logFile = 'tmp.log', $lAppend = false) {
 	file_put_contents($logFile, mb_convert_encoding(print_r($data, true), 'cp1251', 'utf8'), ($lAppend) ? FILE_APPEND : null);
 }

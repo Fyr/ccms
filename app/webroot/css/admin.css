@@ -177,14 +177,9 @@ footer {
 	top: -1px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
+.ui-datepicker .ui-datepicker-header {
+	padding: 1px 0px;
+}
+.navbar .nav > li > a:hover {
+	background-color: #e5e5e5;
+}

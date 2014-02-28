@@ -5,8 +5,6 @@ $(function () {
     })
     $(".time").setMask('time');
 
-
-
     var listItem = $('#accordion > div > div > ul > li.active').parent().parent().addClass('active-accordion')
     var Index = $('#accordion > div > div').index(listItem)
     $('#accordion > div').each(function(i){
@@ -16,6 +14,14 @@ $(function () {
             $(this).accordion({active: false, heightStyle: "content" ,collapsible: true});
         }
     })
+
+    /*
+	$('.navbar-inner li.dropdown').hover(function(){
+		$(this).addClass('open');
+	}, function(){
+		$(this).removeClass('open');
+	});
+	*/
     /*
     $('.date').datepicker({
         dateFormat: "dd.mm.yy",
@@ -25,19 +31,6 @@ $(function () {
         changeYear: true
     })
     */
-/*
-    var filter_is_visible = true
-    $('#show-filter').on('click', function () {
-        if (filter_is_visible) {
-            $('#greed-filter').show()
-        }
-        else {
-            $('#greed-filter').hide()
-        }
-        filter_is_visible = !filter_is_visible
-        return false
-    })
-*/
     $('.open-fieldset').on('click', function () {
         var content = $(this).parent().next('.fieldset-content')
         if (content.is(':visible')) {
