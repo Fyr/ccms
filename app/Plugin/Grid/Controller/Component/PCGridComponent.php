@@ -115,7 +115,12 @@ class PCGridComponent extends Component {
 	}
 
 	private function _initDefaults() {
-		$this->paginate = Hash::merge(array('order' => $this->_getDefaultOrder(), 'limit' => 10), $this->paginate);
+		$order = $this->_getDefaultOrder();
+		$limit = 10;
+		$this->paginate = Hash::merge(array('order' => $order, 'limit' => $limit), $this->paginate);
+		list($sort) = array_keys($this->paginate['order']);
+		list($direction) = array_values($this->paginate['order']);
+		$this->paginate['_defaults'] = compact('sort', 'direction', 'limit');
 	}
 
 	/*

@@ -42,7 +42,9 @@
 	<section class="table-column container-fluid">
 		<div class="row-fluid">
 			<?=$this->Session->flash()?>
-    		<?=$this->fetch('content')?>
+			<div class="span12">
+    			<?=$this->fetch('content')?>
+    		</div>
     	</div>
     </section>
 </main>

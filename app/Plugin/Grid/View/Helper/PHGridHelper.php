@@ -27,6 +27,7 @@ class PHGridHelper extends AppHelper {
 			'total' => $this->Paginator->counter(array('model' => $modelName, 'format' => '{:pages}')),
 			'count' => $this->Paginator->counter(array('model' => $modelName, 'format' => __('Shown {:start}-{:end} of {:count} records'))),
 		);
+		$defaults = Hash::get($this->paginate, '_defaults');
 		$actions = Hash::merge($this->_getDefaultActions(), $actions);
 		$html = '
 <span id="'.$container_id.'"></span>
@@ -38,6 +39,7 @@ $(document).ready(function(){
 		data: '.json_encode($this->paginate['_rowset']).',
 		paging: '.json_encode($paging).',
 		settings: {model: "'.$modelName.'", baseURL: "'.$this->Html->url(array('')).'"},
+		defaults: '.json_encode($defaults).',
 		actions: '.json_encode($actions).'
 	};
 	var '.$container_id.' = new Grid(config);
