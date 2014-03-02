@@ -2,7 +2,7 @@
 App::uses('Helper', 'View');
 class AppHelper extends Helper {
 
-	public function getVar($path) {
+	public function viewVar($path) {
 		return Hash::get($this->_View->viewVars, $path);
 	}
 }

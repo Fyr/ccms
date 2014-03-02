@@ -1,1 +1,1 @@
-<p class="navbar-text text-right small-text right-top">Welcome, <b>User</b>!</p>
+<p class="navbar-text text-right small-text right-top">Welcome, <b>Admin</b>!</p>

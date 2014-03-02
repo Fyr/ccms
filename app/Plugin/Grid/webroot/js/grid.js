@@ -377,7 +377,7 @@ Grid = function(config) {
 	}
 
 	this.renderRow = function(rowData) {
-		var html = '<td class="align-center"><input type="checkbox" class="grid-chbx-row" name="gridChecked[]" value="' + self.getID(rowData) + '"></td>';
+		var html = '<td class="text-center"><input type="checkbox" class="grid-chbx-row" name="gridChecked[]" value="' + self.getID(rowData) + '"></td>';
 		html+= self.renderTableRowActions(rowData);
 		var col;
 		for(var i = 0; i < self.columns.length; i++) {
@@ -427,9 +427,9 @@ Grid = function(config) {
 	this.renderTableCell = function(value, col, rowData) {
 		var _class = new Array();
 		if (col.align == 'center') {
-			_class.push('align-center');
+			_class.push('text-center');
 		} else if (col.align == 'right') {
-			_class.push('align-right');
+			_class.push('text-right');
 		}
 		if (typeof(col.nowrap) != 'undefined' && col.nowrap) {
 			_class.push('nowrap');
@@ -500,7 +500,7 @@ Grid = function(config) {
 	}
 
 	this.renderTablePaging = function() {
-		var html = '<td class="align-center grid-paging">';
+		var html = '<td class="text-center grid-paging">';
 		if (self.paging.total > 1) {
 			html+= self.renderPageIcons();
 			html+= self.renderItemsPerPage();
@@ -546,7 +546,7 @@ Grid = function(config) {
 	this.renderTableRecordsCount = function() {
 		// var style = (self.paging.total > 1 && self.paging.count) ? '' : ' style="height: 24px;"';
 		var style = '';
-		var html = '<td class="align-right grid-records-count">';
+		var html = '<td class="text-right grid-records-count">';
 		html+= self.renderRecordsCount();
 		html+= '</td>';
 		return html;

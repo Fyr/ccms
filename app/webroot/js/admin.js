@@ -15,22 +15,21 @@ $(function () {
         }
     })
 
-    /*
-	$('.navbar-inner li.dropdown').hover(function(){
-		$(this).addClass('open');
+	$('.navbar-inner li.dropdown .dropdown-menu').hover(function(){
+		$(this).closest('.navbar-inner li.dropdown').addClass('open');
 	}, function(){
-		$(this).removeClass('open');
+		$(this).closest('.navbar-inner li.dropdown').removeClass('open');
 	});
-	*/
-    /*
+
     $('.date').datepicker({
         dateFormat: "dd.mm.yy",
-        buttonImage: "img/calendar.png",
+        buttonImage: "/img/icons/calendar.png",
         showOn: "button",
         buttonImageOnly: true,
-        changeYear: true
+        changeYear: true,
+        changeMonth: true
     })
-    */
+
     $('.open-fieldset').on('click', function () {
         var content = $(this).parent().next('.fieldset-content')
         if (content.is(':visible')) {
@@ -52,74 +51,4 @@ $(function () {
             return $(this).next('.popover-content').html()
         }
     })
-    /*
-    var checkAll = true
-    var check = $('.checkthis')
-    var total = check.length
-    check.on('change', function () {
-        var wordCheck
-        if (checkAll){
-             wordCheck = "Check "
-        }
-        else {
-            wordCheck = "Uncheck "
-        }
-        var checked = 0;
-        var text, text2
-        $('#do-anithing').hide()
-        check.each(function () {
-            if ($(this).prop('checked')) {
-                checked++
-            }
-        })
-
-        if (checked > 0) {
-            $('#do-anithing').show()
-            text = "Выбрано <strong>" + checked + "</strong> из <strong>" + total + "</strong>"
-            text2 = wordCheck + total + " records (" + checked + " checked)"
-
-        }
-        if (checked == 0) {
-            $('#do-anithing').hide()
-            text2 = "Check " + total + " records"
-        }
-        if (checked == total){
-            text2 = wordCheck + total + " records"
-        }
-        $('#do-anithing small').html(text)
-        $('.grid-chbx-select-all').attr('data-original-title', text2)
-        Highlighted()
-    })
-
-   $('.grid-chbx-select-all').on('change',function(){
-        if ($(this).prop('checked')) {
-            check.each(function(){
-                $(this).prop('checked', true)
-            })
-            checkAll = false
-        }
-       else {
-            check.each(function(){
-                $(this).prop('checked',false)
-            })
-            checkAll = true
-        }
-       check.change();
-       Highlighted()
-       $(this).tooltip('show');
-   })
-   */
-
 })
-/*
-function Highlighted(){
-   $('.checkthis').each(function(){
-       if ($(this).prop("checked")){
-           $(this).parents('tr').addClass('seleted')
-       }
-       else {
-           $(this).parents('tr').removeClass('seleted')
-       }
-   })
-}
-*/

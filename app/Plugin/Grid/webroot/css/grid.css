@@ -24,51 +24,51 @@
 }
 
 .grid .icon-accept-filter {
-	background-image: url("../img/icons/filter_accept.png") !important;
+	background-image: url("/img/icons/filter_accept.png") !important;
 }
 
 .grid .icon-clear-filter {
-	background-image: url("../img/icons/filter_cancel.png") !important;
+	background-image: url("/img/icons/filter_cancel.png") !important;
 }
 
 .grid .icon-edit {
-	background-image: url("../img/icons/edit.gif") !important;
+	background-image: url("/img/icons/edit.gif") !important;
 }
 
 .grid .icon-delete {
-	background-image: url("../img/icons/del.gif") !important;
+	background-image: url("/img/icons/del.gif") !important;
 }
 
 .grid .icon-add {
-	background-image: url("../img/icons/add.gif") !important;
+	background-image: url("/img/icons/add.gif") !important;
 }
 
 .grid .icon-filter-settings {
-	background-image: url("../img/icons/filter_settings.png") !important;
+	background-image: url("/img/icons/filter_settings.png") !important;
 }
 
 .grid .icon-check {
-	background-image: url("../img/icons/checked.png") !important;
+	background-image: url("/img/icons/checked.png") !important;
 }
 
 .grid .icon-info {
-	background-image: url("../img/icons/preview.gif") !important;
+	background-image: url("/img/icons/preview.gif") !important;
 }
 
 .grid .icon-first {
-	background-image: url("../img/icons/first.gif") !important;
+	background-image: url("/img/icons/first.gif") !important;
 }
 
 .grid .icon-next {
-	background-image: url("../img/icons/next.gif") !important;
+	background-image: url("/img/icons/next.gif") !important;
 }
 
 .grid .icon-last {
-	background-image: url("../img/icons/last.gif") !important;
+	background-image: url("/img/icons/last.gif") !important;
 }
 
 .grid .icon-prev {
-	background-image: url("../img/icons/prev.gif") !important;
+	background-image: url("/img/icons/prev.gif") !important;
 }
 
 .grid td.format-text span {
@@ -93,11 +93,11 @@
 }
 .grid-sortable-desc {
 	padding-right: 16px;
-	background: url("../img/icons/desc.gif") no-repeat right bottom;
+	background: url("/img/icons/desc.gif") no-repeat right bottom;
 }
 .grid-sortable-asc {
 	padding-right: 16px;
-	background: url("../img/icons/asc.gif") no-repeat right top;
+	background: url("/img/icons/asc.gif") no-repeat right top;
 }
 
 .grid thead .first th {
@@ -215,16 +215,8 @@ td.align-right {
 	top: 1px;
 	margin: 0 3px;
 }
-/*
-.grid table tr td a i{
-	position: relative;
-	top: 1px;
-}
-*/
-.table-bordered > tbody > tr >td:first-child{
-	border-left: none !important;
-}
-.table-bordered .first th:first-child {
+
+.grid > tbody > tr >td:first-child, .grid .first th:first-child {
 	border-left: none !important;
 }
 .grid-footer small{

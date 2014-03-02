@@ -6,7 +6,7 @@ class AdminController extends AppController {
 	public $components = array('Auth', 'Grid.PCGrid');
 	public $layout = 'admin';
 	public $uses = array('Article');
-	public $helpers = array('Paginator', 'Grid.PHGrid');
+	public $helpers = array('Paginator', 'Grid.PHGrid', 'Html', 'Input');
 
 	protected $scaffoldModel = ''; // for autimatic custom scaffold for model's CRUD
 	public $paginate;
@@ -99,11 +99,14 @@ class AdminController extends AppController {
 	}
 
 	public function edit($id = false) {
+		/*
 		$data = $this->TableEdit->edit($this->scaffoldModel, $id, $lSaved);
 		if ($lSaved) {
 			$this->Loader->loadHelper('TableGrid');
 			$this->redirect($this->TableGrid->actionURL('index'));
 		}
+		*/
+		$data = array();
 		return $data;
 	}
 

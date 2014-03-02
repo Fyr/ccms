@@ -6,7 +6,7 @@
 <?php
 	echo $this->Html->meta('icon');
 
-	echo $this->Html->css(array('bootstrap.min', 'jquery-ui-1.10.3.custom', 'admin', 'table'));
+	echo $this->Html->css(array('bootstrap.min', 'jquery-ui-1.10.3.custom', 'admin'));
 	$aScripts = array(
 		'jquery-1.10.2.min',
 		'jquery.cookie',
@@ -14,7 +14,6 @@
 		'bootstrap.min',
 		'meiomask',
 		'admin',
-		'grid'
 	);
 
 	echo $this->Html->script($aScripts);

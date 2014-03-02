@@ -6,11 +6,11 @@ class PHGridHelper extends AppHelper {
 
 	private function _getDefaultActions() {
 		$table = array(
-			array('class' => 'icon-add', 'label' => __('Add record')),
+			array('class' => 'icon-add', 'label' => __('Add record'), 'href' => $this->Html->url(array('action' => 'edit'))),
 			array('class' => 'icon-filter-settings grid-show-filter', 'label' => __('Show filter settings'))
 		);
 		$row = array(
-			array('class' => 'icon-edit', 'label' => __('Edit record')),
+			array('class' => 'icon-edit', 'label' => __('Edit record'), 'href' => urldecode($this->Html->url(array('action' => 'edit', '{$id}')))),
 			array('class' => 'icon-delete', 'label' => __('Delete record'))
 		);
 		$checked = array(
@@ -20,7 +20,10 @@ class PHGridHelper extends AppHelper {
 	}
 
 	public function render($modelName, $actions = array()) {
-		$this->paginate = $this->getVar('_paginate.'.$modelName);
+		$this->Html->css('/Grid/css/grid', array('inline' => false));
+		$this->Html->script('/Grid/js/grid', array('inline' => false));
+
+		$this->paginate = $this->viewVar('_paginate.'.$modelName);
 		$container_id = 'grid_'.$modelName;
 		$paging = array(
 			'curr' => $this->Paginator->counter(array('model' => $modelName, 'format' => '{:page}')),
