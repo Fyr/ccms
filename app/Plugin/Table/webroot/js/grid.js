@@ -213,7 +213,7 @@ Grid = function(config) {
 	}
 
 	this.render = function() {
-		var html = '<table class="grid table-bordered">';
+		var html = '<table class="grid table-bordered shadow">';
 		html+= self.renderTableHeader();
 		html+= '<tbody>';
 		html+= self.renderBody();

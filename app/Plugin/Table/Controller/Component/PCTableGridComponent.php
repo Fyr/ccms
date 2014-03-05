@@ -5,7 +5,7 @@
  * - for string filters: implement * mask
  */
 App::uses('Component', 'Controller');
-class PCGridComponent extends Component {
+class PCTableGridComponent extends Component {
 
 	/**
 	 * Parent controller

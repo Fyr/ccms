@@ -1,12 +1,11 @@
 <?php
 App::uses('AppController', 'Controller');
-
 class AdminController extends AppController {
 	public $name = 'Admin';
-	public $components = array('Auth', 'Grid.PCGrid');
+	public $components = array('Auth', 'Table.PCTableGrid');
 	public $layout = 'admin';
 	public $uses = array('Article');
-	public $helpers = array('Paginator', 'Grid.PHGrid', 'Html', 'Input');
+	public $helpers = array('Paginator', 'Form', 'Html', 'Table.PHTableGrid', 'Table.PHTableInput', 'Input');
 
 	protected $scaffoldModel = ''; // for autimatic custom scaffold for model's CRUD
 	public $paginate;
@@ -94,11 +93,12 @@ class AdminController extends AppController {
 		$this->paginate = array(
 			'fields' => array('id', 'created', 'title', 'teaser', 'published'),
 		);
-		$aArticles = $this->PCGrid->paginate('Article');
-		$this->set('aArticles', $aArticles);
+		$this->PCTableGrid->paginate('Article');
+		// $this->set('aArticles', $aArticles);
 	}
 
-	public function edit($id = false) {
+	public function edit($id = 0) {
+		// $row = $this->Article->findById($id);
 		/*
 		$data = $this->TableEdit->edit($this->scaffoldModel, $id, $lSaved);
 		if ($lSaved) {
@@ -106,8 +106,17 @@ class AdminController extends AppController {
 			$this->redirect($this->TableGrid->actionURL('index'));
 		}
 		*/
-		$data = array();
-		return $data;
+		if ($this->request->is('post') || $this->request->is('put')) {
+			fdebug('put!');
+			fdebug($this->request->data);
+			if ($this->Article->save($this->request->data)) {
+				fdebug('saved!');
+			} else {
+				fdebug('not valid!');
+			}
+		} elseif ($id) {
+			$this->request->data = $this->Article->findById($id);
+		}
 	}
 
 	public function delete($id) {
@@ -121,4 +130,11 @@ class AdminController extends AppController {
 		$data = $this->TableEdit->view($this->scaffoldModel, $id);
 	}
 
+	public function upload() {
+		$this->autoRender = false;
+
+		App::uses('UploadHandler', 'Vendor');
+		$upload_handler = new UploadHandler();
+
+	}
 }

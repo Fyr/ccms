@@ -1,6 +1,6 @@
 <?php
 App::uses('AppHelper', 'View/Helper');
-class PHGridHelper extends AppHelper {
+class PHTableGridHelper extends AppHelper {
 	public $helpers = array('Paginator', 'Html');
 	private $paginate;
 
@@ -20,8 +20,8 @@ class PHGridHelper extends AppHelper {
 	}
 
 	public function render($modelName, $actions = array()) {
-		$this->Html->css('/Grid/css/grid', array('inline' => false));
-		$this->Html->script('/Grid/js/grid', array('inline' => false));
+		$this->Html->css('/Table/css/grid', array('inline' => false));
+		$this->Html->script('/Table/js/grid', array('inline' => false));
 
 		$this->paginate = $this->viewVar('_paginate.'.$modelName);
 		$container_id = 'grid_'.$modelName;
@@ -33,7 +33,7 @@ class PHGridHelper extends AppHelper {
 		$defaults = Hash::get($this->paginate, '_defaults');
 		$actions = Hash::merge($this->_getDefaultActions(), $actions);
 		$html = '
-<span id="'.$container_id.'"></span>
+<span id="'.$container_id.'" class="shadow"></span>
 <script type="text/javascript">
 $(document).ready(function(){
 	var config = {
