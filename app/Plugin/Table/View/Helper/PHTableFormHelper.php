@@ -4,7 +4,7 @@
  * Customizes HTML inputs for filters and uses the same parameters for Form helper methods
  */
 App::uses('FormHelper', 'View/Helper');
-class TableInputHelper extends FormHelper {
+class PHTableFormHelper extends FormHelper {
 	// var $helpers = array('Form', 'Html');
 	public function create($model, $options = array()) {
 		$options['class'] = (isset($options['class']) && $options['class']) ? $options['class'] : 'form-horizontal';

@@ -28,11 +28,11 @@
 <?
 	echo $this->element('admin_content');
 	// fdebug($this->request->data);
-	echo $this->Input->create('Article');
-	echo $this->Input->Input('published');
-	echo $this->Input->editor('body');
-	echo $this->Input->submit();
-	echo $this->Input->end();
+	echo $this->PHTableForm->create('Article');
+	echo $this->PHTableForm->input('published');
+	echo $this->PHTableForm->editor('body');
+	echo $this->PHTableForm->submit();
+	echo $this->PHTableForm->end();
 	echo $this->element('admin_content_end');
 ?>
 

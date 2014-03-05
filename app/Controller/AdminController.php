@@ -5,7 +5,7 @@ class AdminController extends AppController {
 	public $components = array('Auth', 'Table.PCTableGrid');
 	public $layout = 'admin';
 	public $uses = array('Article');
-	public $helpers = array('Paginator', 'Form', 'Html', 'Table.PHTableGrid', 'Table.PHTableInput', 'Input');
+	public $helpers = array('Paginator', 'Form', 'Html', 'Table.PHTableGrid', 'Table.PHTableInput', 'Table.PHTableForm');
 
 	protected $scaffoldModel = ''; // for autimatic custom scaffold for model's CRUD
 	public $paginate;
