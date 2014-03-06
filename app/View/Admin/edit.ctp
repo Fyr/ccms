@@ -34,6 +34,8 @@
 	echo $this->PHTableForm->submit();
 	echo $this->PHTableForm->end();
 	echo $this->element('admin_content_end');
+
+	echo $this->element('admin_tabs', array('aTabs' => array('Content' => '!!!', 'Media' => '###')));
 ?>
 
 		<table class="table table-bordered table-form shadow">

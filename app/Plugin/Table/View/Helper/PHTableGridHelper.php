@@ -33,7 +33,7 @@ class PHTableGridHelper extends AppHelper {
 		$defaults = Hash::get($this->paginate, '_defaults');
 		$actions = Hash::merge($this->_getDefaultActions(), $actions);
 		$html = '
-<span id="'.$container_id.'" class="shadow"></span>
+<span id="'.$container_id.'"></span>
 <script type="text/javascript">
 $(document).ready(function(){
 	var config = {
