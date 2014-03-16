@@ -14,64 +14,6 @@
 	margin: 0 auto 20px auto;
 }
 
-.grid [class^="icon"] {
-	width: 16px;
-	height: 16px;
-	background-repeat: no-repeat;
-	background-position: top left;
-	vertical-align: middle;
-	margin-top: 0px;
-	margin-right: 2px;
-}
-
-.grid .icon-accept-filter {
-	background-image: url("/img/icons/filter_accept.png") !important;
-}
-
-.grid .icon-clear-filter {
-	background-image: url("/img/icons/filter_cancel.png") !important;
-}
-
-.grid .icon-edit {
-	background-image: url("/img/icons/edit.gif") !important;
-}
-
-.grid .icon-delete {
-	background-image: url("/img/icons/del.gif") !important;
-}
-
-.grid .icon-add {
-	background-image: url("/img/icons/add.gif") !important;
-}
-
-.grid .icon-filter-settings {
-	background-image: url("/img/icons/filter_settings.png") !important;
-}
-
-.grid .icon-check {
-	background-image: url("/img/icons/checked.png") !important;
-}
-
-.grid .icon-info {
-	background-image: url("/img/icons/preview.gif") !important;
-}
-
-.grid .icon-first {
-	background-image: url("/img/icons/first.gif") !important;
-}
-
-.grid .icon-next {
-	background-image: url("/img/icons/next.gif") !important;
-}
-
-.grid .icon-last {
-	background-image: url("/img/icons/last.gif") !important;
-}
-
-.grid .icon-prev {
-	background-image: url("/img/icons/prev.gif") !important;
-}
-
 .grid td.format-text span {
 	display: block;
 	width: 250px;
@@ -81,24 +23,31 @@
 }
 
 .grid-sortable, .grid-sortable:visited {
-	color: #E0E0E0;
+	color: #EAEAEA;
+	text-shadow:0 2px 0 rgba(0, 0, 0, 0.25);
+	text-decoration: none;
+	position: relative;
+	top: -1px;
 }
-.grid-sortable:hover {
+.grid-unsortable, .grid-unsortable:visited, .grid-unsortable:hover {
+	color: #d0d0d0;
+	text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);
+	text-decoration: none;
+	cursor: default;
+}
+.grid-sortable-active, .grid-sortable-active:visited, .grid-sortable:hover {
 	color: #fff;
-}
-.grid-sortable, a.grid-sortable {
-	text-decoration: underline;
-}
-.grid-sortable-active, .grid-sortable-active:visited {
-	color: #fff;
+	text-shadow: none;
+	text-decoration: none;
+	top: 0;
 }
 .grid-sortable-desc {
 	padding-right: 16px;
-	background: url("/img/icons/desc.gif") no-repeat right bottom;
+	background: url("/Icons/img/desc.gif") no-repeat right bottom;
 }
 .grid-sortable-asc {
 	padding-right: 16px;
-	background: url("/img/icons/asc.gif") no-repeat right top;
+	background: url("/Icons/img/asc.gif") no-repeat right top;
 }
 
 .grid thead .first th {
@@ -124,8 +73,8 @@
 
 .grid > thead > tr > th {
 	padding: 3px 5px;
-	vertical-align: middle;
 	text-align: center;
+	vertical-align: middle;
 }
 .grid > thead > tr.grid-filter > th:first-child {
 	border: 0px solid #fff;
@@ -133,6 +82,7 @@
 .grid > tbody > tr.grid-row > td {
 	border-left: 1px solid #ebeff2;
 	padding: 3px 5px;
+	vertical-align: middle;
 }
 
 .grid .grid-row:nth-child(odd) td {

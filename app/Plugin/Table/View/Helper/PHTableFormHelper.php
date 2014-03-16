@@ -22,6 +22,8 @@ class PHTableFormHelper extends FormHelper {
 		$options = $this->_parseOptions($options);
 		if ($options['type'] == 'checkbox') {
 			$options['format'] = array('before', 'label', 'between', 'input', 'after', 'error');
+		} elseif ($options['type'] == 'text' || $options['type'] == 'textarea') {
+			$options = array_merge(array('class' => 'input-xxlarge'), $options);
 		}
 		return parent::input($fieldName, $options);
 	}
@@ -39,13 +41,15 @@ class PHTableFormHelper extends FormHelper {
 	 * @return string
 	 */
 	public function editor($fieldName, $options = array()) {
-		$this->Html->script('vendor/ckeditor/ckeditor.js', array('inline' => false));
-		$options = array_merge(array('class' => 'ckeditor'), $options);
-		// $options['class'] = 'ckeditor '.$options['class'];
-		/*
-		$label = $this->label($options['id'], $options['label']);
-		return '<div class="control-group">'.$label.'<div class="clearfix"></div>'.$this->Form->textarea($name, $options).'</div>';
-		*/
-		return parent::input($fieldName, $options);
-	}
+        $this->Html->script('vendor/ckeditor/ckeditor', array('inline' => false));
+        $this->Html->css('/js/vendor/ckeditor/fixes', array('inline' => false));
+        $options = array_merge(array('class' => 'ckeditor'), $options); // 
+        // $options['class'] = 'ckeditor '.$options['class'];
+        
+        if (isset($options['fullwidth']) && $options['fullwidth']) {
+            return '<div class="control-group"><div class="clearfix"></div><div class="shadow text-center">'.$this->textarea($fieldName, $options).'</div></div>';
+        }
+        
+        return parent::input($fieldName, $options);
+    }
 }

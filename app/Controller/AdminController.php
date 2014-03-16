@@ -2,68 +2,33 @@
 App::uses('AppController', 'Controller');
 class AdminController extends AppController {
 	public $name = 'Admin';
-	public $components = array('Auth', 'Table.PCTableGrid');
+	public $components = array('Auth', /*'Table.PCTableGrid',*/ 'Article.PCArticle');
 	public $layout = 'admin';
-	public $uses = array('Article');
+	public $uses = array('Article.Article', 'Media.Media');
 	public $helpers = array('Paginator', 'Form', 'Html', 'Table.PHTableGrid', 'Table.PHTableInput', 'Table.PHTableForm');
 
-	protected $scaffoldModel = ''; // for autimatic custom scaffold for model's CRUD
+	//protected $scaffoldModel = ''; // for autimatic custom scaffold for model's CRUD
 	public $paginate;
+	private $aNavBar, $currMenu;
 
 	public function beforeFilter() {
-		// Overload auth settings for admin area
-		// $this->Loader->loadComponent('Auth');
-
-		// $this->Auth->authenticate = array('Form' => array('userModel' => 'User', 'fields' => array('username' => 'username')));
 		$this->Auth->authorize = array('Controller');
 		$this->Auth->loginAction = array('controller' => 'AdminAuth', 'action' => 'login');
 		$this->Auth->loginRedirect = array('controller' => 'Admin', 'action' => 'index');
 		$this->Auth->logoutRedirect = '/';
 		$this->Auth->authError = __('You can\'t access that page');
 
-		// fix default order for pagination
-		if ($this->scaffoldModel && isset($this->paginate['order']) && $this->paginate['order'] == 'id') {
-			$this->paginate['order'] = $this->scaffoldModel.'.id';
-		}
-/*
 		$this->aNavBar = array(
-			'AdminDashboard' => array('title' => 'Dashboard', 'url' => Router::url(array('controller' => 'AdminDashboard'))),
-			'AdminSys' => array('title' => 'System', 'url' => '#', 'submenu' => array(
-				'AdminSysLocations' => array('title' => 'Locations', 'url' => Router::url(array('controller' => '/AdminSysLocations'))),
-				'AdminSysPerms' => array('title' => 'Permissions', 'url' => Router::url(array('controller' => '/AdminSysPerms'))),
-				'AdminSysRoles' => array('title' => 'Roles', 'url' => Router::url(array('controller' => '/AdminSysRoles'))),
-				'AdminSysUsers' => array('title' => 'Users', 'url' => Router::url(array('controller' => '/AdminSysUsers'))),
-				'AdminSysInspections' => array('title' => 'Inspections', 'url' => Router::url(array('controller' => '/AdminSysInspections'))),
-				'AdminSysResourceTypes' => array('title' => 'Resource Types', 'url' => Router::url(array('controller' => '/AdminSysResourceTypes'))),
-				'',
-				'AdminLogs' => array('title' => 'Logs', 'url' => Router::url(array('controller' => '/AdminLogs')))
+			'content' => array('label' => __('Content'), 'submenu' => array(
+				array('label' => __('Articles'), 'href' => '/admin/')
 			)),
-			'AdminApp' => array('title' => 'Units', 'url' => '#', 'submenu' => array(
-				'AdminUnits' => array('title' => 'Organizations', 'url' => Router::url(array('controller' => '/AdminUnits'))),
-				'AdminUnitResourceTypes' => array('title' => 'Resource Types', 'url' => Router::url(array('controller' => '/AdminUnitResourceTypes'))),
-				'',
-				'AdminUnitItems' => array('title' => 'Items', 'url' => Router::url(array('controller' => '/AdminUnitItems'))),
-				'AdminUnitSettings' => array('title' => 'Settings', 'url' => Router::url(array('controller' => '/AdminUnitSettings'))),
-				'AdminUnitInspections' => array('title' => 'Inspections', 'url' => Router::url(array('controller' => '/AdminUnitInspections'))),
-				'AdminUnitLocations' => array('title' => 'Locations', 'url' => Router::url(array('controller' => '/AdminUnitLocations'))),
-				'AdminUnitRoles' => array('title' => 'Roles', 'url' => Router::url(array('controller' => '/AdminUnitRoles'))),
-				'AdminUnitUsers' => array('title' => 'Unit Users', 'url' => Router::url(array('controller' => '/AdminUnitUsers'))),
-				'AdminUnitResources' => array('title' => 'Resources', 'url' => Router::url(array('controller' => '/AdminUnitResources'))),
-				'AdminUnitLogs' => array('title' => 'Logs', 'url' => Router::url(array('controller' => '/AdminUnitLogs'))),
-			)),
-			'AdminAppUsers' => array('title' => 'Users', 'url' => Router::url(array('controller' => '/AdminAppUsers'))),
-			'AdminEvents' => array('title' => 'Events', 'url' => Router::url(array('controller' => '/AdminEvents'))),
-			'AdminPayments' => array('title' => 'Payments?', 'url' => Router::url(array('controller' => '/AdminPayments'))),
-			'AdminAlerts' => array('title' => 'Alerts?', 'url' => Router::url(array('controller' => '/AdminAlerts'))),
-			'AdminPages' => array('title' => 'Pages', 'url' => Router::url(array('controller' => '/AdminPages'))),
-			'AdminNews' => array('title' => 'News', 'url' => Router::url(array('controller' => '/AdminNews')))
+			'categories' => array('label' => __('Categories'), 'href' => '/admin/'),
+			'products' => array('label' => __('Products'), 'href' => '/admin/'),
+			'settings' => array('label' => __('Settings'), 'href' => '/admin/')
 		);
-
-		$this->currMenu = $this->initCurrMenu();
-		*/
 	}
 
-	protected function initCurrMenu() {
+	protected function getCurrMenu() {
 		$curr_menu = $this->request->controller; // By default curr.menu is the same as controller name
 		foreach($this->aNavBar as $currMenu => $item) {
 			if (isset($item['submenu'])) {
@@ -78,26 +43,36 @@ class AdminController extends AppController {
 	}
 
 	public function beforeRender() {
-		parent::beforeRender();
-		$this->set('scaffoldModel', $this->scaffoldModel);
+		$this->set('aMenu', $this->aNavBar);
+		$this->set('currMenu', $this->currMenu);
 	}
 
 	public function isAuthorized($user) {
-		// CakeLog::write('alert', print_r($user));
 		return true;
 	}
 
 	public function index() {
-		// $aArticles = $this->Article->find('all', array('conditions' => array('id >' => 80), 'order' => array('id'), 'limit' => 10));
-		// $this->paginate = array('Article' => array('limit' => 10));
+		/*
 		$this->paginate = array(
 			'fields' => array('id', 'created', 'title', 'teaser', 'published'),
 		);
 		$this->PCTableGrid->paginate('Article');
-		// $this->set('aArticles', $aArticles);
+		*/
+		$this->currMenu = 'content';
+		$this->PCArticle->index();
 	}
 
 	public function edit($id = 0) {
+	    /*
+        App::uses('MediaPath', 'Media.Vendor');
+		$this->PHMedia = new MediaPath();		// $this->Media = new MediaHelper(new View());
+		fdebug($this->PHMedia->getSizeInfo('230x100'));
+        */
+	    // $this->set('mediaData', $this->Media->getList(array('object_type' => 'Article', 'object_id' => $id)));
+		$this->PCArticle->edit($id, &$lSaved);
+		if ($lSaved) {
+			$this->redirect(array($id));
+		}
 		// $row = $this->Article->findById($id);
 		/*
 		$data = $this->TableEdit->edit($this->scaffoldModel, $id, $lSaved);
@@ -106,30 +81,34 @@ class AdminController extends AppController {
 			$this->redirect($this->TableGrid->actionURL('index'));
 		}
 		*/
-		if ($this->request->is('post') || $this->request->is('put')) {
-			fdebug('put!');
-			fdebug($this->request->data);
-			if ($this->Article->save($this->request->data)) {
-				fdebug('saved!');
-			} else {
-				fdebug('not valid!');
-			}
-		} elseif ($id) {
-			$this->request->data = $this->Article->findById($id);
-		}
 	}
 
 	public function delete($id) {
+		$this->autoRender = false;
+
+		$model = $this->request->query('model');
+		if ($model) {
+			$this->loadModel($model);
+			$this->{$model}->delete($id);
+		}
+		if ($backURL = $this->request->query('backURL')) {
+			$this->redirect($backURL);
+			return;
+		}
+		/*
 		$this->TableEdit->delete($this->scaffoldModel, $id);
 
 		$this->Loader->loadHelper('TableGrid');
 		$this->redirect($this->TableGrid->actionURL('index'));
+		*/
+		$this->redirect(array('controller' => 'Admin', 'action' => 'index'));
 	}
-
+/*
 	public function view($id) {
 		$data = $this->TableEdit->view($this->scaffoldModel, $id);
 	}
-
+*/
+	/*
 	public function upload() {
 		$this->autoRender = false;
 
@@ -137,4 +116,5 @@ class AdminController extends AppController {
 		$upload_handler = new UploadHandler();
 
 	}
+	*/
 }

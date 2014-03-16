@@ -35,15 +35,15 @@ Grid = function(config) {
 
 	self.actions = {
 		table: [
-			{class: 'icon-add', label: 'Add record'},
-			{class: 'icon-filter-settings grid-show-filter', label: 'Show filter settings'}
+			{class: 'icon-color icon-add', label: 'Add record'},
+			{class: 'icon-color icon-filter-settings grid-show-filter', label: 'Show filter settings'}
 		],
 		row: [
-			{class: 'icon-edit', label: 'Edit record'},
-			{class: 'icon-delete', label: 'Delete record'}
+			{class: 'icon-color icon-edit', label: 'Edit record'},
+			{class: 'icon-color icon-delete', label: 'Delete record'}
 		],
 		checked: [
-			{class: 'icon-delete', label: 'Delete checked records'},
+			{class: 'icon-color icon-delete', label: 'Delete checked records'},
 		]
 	};
 
@@ -60,33 +60,26 @@ Grid = function(config) {
 		self.initFilters(config.filters);
 
 		self.render();
-
-		self.bindCheckAll();
-		self.bindCheckboxes();
-		self.bindFilter();
-		self.bindPaging();
-		self.bindSorting();
-		self.bindTooltips();
 	}
 
 	this.initColumns = function(columns) {
 		self.columns = columns;
 		for(var i = 0; i < self.columns.length; i++) {
 			var col = self.columns[i];
-			if (col.key.indexOf('.') == -1) {
+			if (col.key.indexOf('.') == -1 && self.settings.model) {
 				self.columns[i].key = self.settings.model + '.' + col.key;
 				// self.columns[i].model = self.settings.model;
 			} else {
 
 			}
 			if (typeof(col.label) == 'undefined') {
-				var key = col.key.split('.');
-				self.columns[i].label = key[1];
+				var key = (self.settings.model) ? self.getModelField(col.key).field : col.key;
+				self.columns[i].label = key.ucFirst();
 			}
 			if (typeof(col.format) != 'undefined') {
 				if (col.format == 'boolean' || col.format == 'date' || col.format == 'datetime') {
 					self.columns[i].align = 'center';
-				} else if (col.format == 'integer')  {
+				} else if (col.format == 'integer' || col.format == 'filesize')  {
 					self.columns[i].align = 'right';
 				}
 			} else {
@@ -115,6 +108,7 @@ Grid = function(config) {
 
 	this.initSettings = function(settings) {
 		self.settings = $.extend(self.settings, self.defaults, self.cookie(), settings);
+		/*
 		if (!self.settings.model) {
 			if (typeof(self.data[0]) != 'undefined') {
 				for(var i in self.data[0]) {
@@ -126,8 +120,9 @@ Grid = function(config) {
 		if (!self.settings.model) {
 			alert('Cannot determine model from rowset! Please specify model property in config');
 		}
+		*/
 		if (self.settings.primaryKey.indexOf('.') == -1) {
-			self.settings.primaryKey = self.settings.model + '.' + self.settings.primaryKey;
+			self.settings.primaryKey = (self.settings.model) ? self.settings.model + '.' + self.settings.primaryKey : 'id';
 		}
 		if (!self.defaults.sort) {
 			self.defaults.sort = self.settings.primaryKey;
@@ -220,6 +215,8 @@ Grid = function(config) {
 		html+= self.renderTableFooter();
 		html+= '</tbody></table>';
 		$self.html(html);
+		
+		self.bindAll();
 	}
 
 	this.renderTableHeader = function() {
@@ -275,6 +272,8 @@ Grid = function(config) {
 				sort.push('grid-sortable-active');
 				sort.push('grid-sortable-' + self.settings.direction);
 			}
+		} else {
+			sort.push('grid-unsortable');
 		}
 		var html = '<a href="javascript:void(0)" class="' + sort.join(' ') + '">' + col.label + '</a>';
 		return html;
@@ -285,8 +284,8 @@ Grid = function(config) {
 		var html= '<tr class="grid-filter' + hide + '">';
 		html+= '<th></th>';
 		html+= '<th>';
-		html+= '<a class="icon-in-bg icon-accept-filter grid-filter-submit" href="javascript:void(0)" rel="tooltip" title="Apply filter setting"></a>';
-		html+= '<a class="icon-in-bg icon-clear-filter grid-filter-clear" href="javascript:void(0)" rel="tooltip" title="Clear filter setting"></a>';
+		html+= '<a class="icon-color icon-accept-filter grid-filter-submit" href="javascript:void(0)" rel="tooltip" title="Apply filter setting"></a>';
+		html+= '<a class="icon-color icon-clear-filter grid-filter-clear" href="javascript:void(0)" rel="tooltip" title="Clear filter setting"></a>';
 		html+= '</th>';
 		for(var i = 0; i < self.columns.length; i++) {
 			html+= self.renderTableFilterCell(self.columns[i], self.getFilterParamValue(self.columns[i]));
@@ -393,12 +392,15 @@ Grid = function(config) {
 	}
 
 	this.getColVal = function(column, rowData) {
-		var col = self.getModelField(column.key);
-		return rowData[col.model][col.field];
+		if (self.settings.model) {
+			var col = self.getModelField(column.key);
+			return rowData[col.model][col.field];
+		}
+		return rowData[column.key];
 	}
 
 	this.renderTableRowActions = function(rowData) {
-		var html = '<td class="nowrap aling-center">';
+		var html = '<td class="nowrap text-center">';
 		html+= self.renderRowActions(rowData);
 		html+= '</td>';
 		return html;
@@ -407,16 +409,23 @@ Grid = function(config) {
 	this.renderRowActions = function(rowData) {
 		var html = '';
 		for(var i = 0; i < self.actions.row.length; i++) {
-			var actionData = self.actions.row[i];
-			var action = '<a class="' + actionData.class + '" href="' + self.getRowURL(rowData, actionData.href) + '" title="' + actionData.label + '"></a>';
-			html+= action;
+			var actionData = self.actions.row[i], action = '';
+			if (typeof(actionData) == 'object') {
+				action = '<a class="' + actionData.class + '" href="' + actionData.href + '" title="' + actionData.label + '"></a>';
+			} else if (typeof(actionData) == 'string') {
+				action = actionData;
+			}
+			html+= self.getRowURL(rowData, action);
 		}
 		return html;
 	}
 
 	this.getID = function(rowData) {
-		var col = self.getModelField(self.settings.primaryKey);
-		return rowData[col.model][col.field];
+		if (self.settings.model) {
+			var col = self.getModelField(self.settings.primaryKey);
+			return rowData[col.model][col.field];
+		}
+		return rowData[self.settings.primaryKey];
 	}
 
 	this.getRowURL = function(rowData, href) {
@@ -426,11 +435,7 @@ Grid = function(config) {
 
 	this.renderTableCell = function(value, col, rowData) {
 		var _class = new Array();
-		if (col.align == 'center') {
-			_class.push('text-center');
-		} else if (col.align == 'right') {
-			_class.push('text-right');
-		}
+		_class.push('text-' + col.align);
 		if (typeof(col.nowrap) != 'undefined' && col.nowrap) {
 			_class.push('nowrap');
 		}
@@ -447,17 +452,24 @@ Grid = function(config) {
 	}
 
 	this.renderCell = function(value, col, rowData) {
-		if (value === null) {
+		if (value === null || typeof(value) == 'undefined') {
 			return '';
 		}
 		if (col.format == 'text') {
 			return '<span>' + value + '</span>';
-		}
-		if (col.format == 'boolean') {
-			return (value) ? '<i class="icon-in-bg icon-check"></i>' : '';
-		}
-		if (col.key == 'teaser') {
-
+		} else if (col.format == 'boolean') {
+			return (value) ? '<i class="icon-color icon-check"></i>' : '';
+		} else if (col.format == 'filesize') {
+			var sizes = ['', 'Kb', 'Mb', 'Gb'];
+			for (var i = 0; i < sizes.length; i++) {
+				if (value < 1024) {
+					return Math.round(value * 10, 1) / 10 + '<span class="file-size">' + sizes[i] + '</span>';
+				}
+				value = value / 1024;
+			}
+			return
+		} else if (col.format == 'img') {
+			return '<img src="' + value + '" alt="" />';
 		}
 		return value;
 	}
@@ -515,15 +527,15 @@ Grid = function(config) {
 		var html = '';
 		var pagination = self.paging;
 		if (pagination.total > 1) {
-			html = '<span>Страница</span>';
+			html = '<span>Page</span>';
 			if (pagination.curr > 1) {
-				html+= '<a class="grid-paging-first" href="javascript:void(0)" title="Go to first page" rel="tooltip-bottom"><i class="icon-first"></i></a>';
-				html+= '<a class="grid-paging-prev" href="javascript:void(0)" title="Go to previous page" rel="tooltip-bottom"><i class="icon-prev"></i></a>';
+				html+= '<a class="icon-color icon-first grid-paging-first" href="javascript:void(0)" title="Go to first page" rel="tooltip-bottom"></a>';
+				html+= '<a class="icon-color icon-prev grid-paging-prev" href="javascript:void(0)" title="Go to previous page" rel="tooltip-bottom"></a>';
 			}
 			html+= '<input type="text" class="grid-paging-page" value="' + pagination.curr + '" style="width: 17px;">';
 			if (pagination.curr < pagination.total) {
-				html+= '<a class="grid-paging-next" href="javascript:void(0)" title="Go to next page" rel="tooltip-bottom"><i class="icon-next"></i></a>';
-				html+= '<a class="grid-paging-last" href="javascript:void(0)" title="Go to last page" rel="tooltip-bottom"><i class="icon-last"></i></a>';
+				html+= '<a class="icon-color icon-next grid-paging-next" href="javascript:void(0)" title="Go to next page" rel="tooltip-bottom"></a>';
+				html+= '<a class="icon-color icon-last grid-paging-last" href="javascript:void(0)" title="Go to last page" rel="tooltip-bottom"></a>';
 			}
 		}
 		return html;
@@ -532,13 +544,13 @@ Grid = function(config) {
 	this.renderItemsPerPage = function() {
 		var html = '';
 		if (self.paging.total > 1) {
-			html = '<span>по</span><select class="grid-paging-perpage">';
+			html = '<span></span><select class="grid-paging-perpage">';
 			for(var i = 0; i < self.paging.perPageList.length; i++) {
 				var perPage = self.paging.perPageList[i];
 				var selected = (perPage == self.paging.limit) ? ' selected="selected"' : '';
 				html+= '<option value="' + perPage + '"' + selected + '>' + self.paging.perPageList[i] + '</option>';
 			}
-			html+= '</select><span>записей на странице</span>';
+			html+= '</select><span>records per page</span>';
 		}
 		return html;
 	}
@@ -558,6 +570,15 @@ Grid = function(config) {
 			return '<span>' + pagination.count + '</span>';
 		}
 		return ''; //'<span>&nbsp;</span>';
+	}
+	
+	this.bindAll = function() {
+	    self.bindCheckAll();
+		self.bindCheckboxes();
+		self.bindFilter();
+		self.bindPaging();
+		self.bindSorting();
+		self.bindTooltips();
 	}
 
 	this.bindCheckAll = function() {
@@ -614,7 +635,7 @@ Grid = function(config) {
 		});
 		$('.grid-filter-date', $self).datepicker({
 			dateFormat: "dd.mm.yy",
-			buttonImage: "/img/icons/calendar.png",
+			buttonImage: "/Icons/img/calendar.png",
 			showOn: "button",
 			buttonImageOnly: true,
 			changeYear: true,

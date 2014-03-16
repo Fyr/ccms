@@ -1,1 +1,1 @@
-<table class="table table-bordered table-form shadow"><tbody><tr><td>
+<div class="admin-content img-rounded shadow">

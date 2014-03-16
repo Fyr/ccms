@@ -112,6 +112,9 @@ class PCTableGridComponent extends Component {
 		foreach($this->paginate['fields'] as $field) {
 			$this->paginate['_columns'][] = $this->_getColumn($field);
 		}
+		if (!isset($this->paginate['fields'][$this->model->primaryKey])) {
+			$this->paginate['fields'][] = $this->model->alias.'.'.$this->model->primaryKey;
+		}
 	}
 
 	private function _initDefaults() {
@@ -130,12 +133,13 @@ class PCTableGridComponent extends Component {
 	*/
 	public function paginate($modelName, $filters = array()) {
 		$this->model = $this->_->{$modelName};
+		// fdebug($this->model);
 		$this->_init();
 		$this->_initFields();
 		$this->_initDefaults();
 		// $this->_initConditions();
 		$this->_->paginate[$modelName] = $this->paginate;
-		fdebug($this->paginate, 'paginate.log');
+		// fdebug($this->paginate, 'paginate.log');
 		$filters = ($filters) ? $filters : $this->_->params['named'];
 		$this->setFilter($filters);
 		$aRowset = $this->_->paginate($modelName, $this->getFilter());

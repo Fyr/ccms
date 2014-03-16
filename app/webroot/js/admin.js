@@ -1,4 +1,6 @@
 $(function () {
+	$('form input, form checkbox, form select, form radio').attr('autocomplete', 'off');
+
     $('*[rel="tooltip"]').tooltip()
     $('*[rel="tooltip-bottom"]').tooltip({
         placement: "bottom"
@@ -23,19 +25,11 @@ $(function () {
 
     $('.date').datepicker({
         dateFormat: "dd.mm.yy",
-        buttonImage: "/img/icons/calendar.png",
+        buttonImage: "/Icons/img/calendar.png",
         showOn: "button",
         buttonImageOnly: true,
         changeYear: true,
         changeMonth: true
-    });
-
-    $('ul.nav.nav-tabs > li > a').click(function(){
-    	var tab = $(this).parent().get(0).id.replace(/tab\-/, '');
-    	$('ul.nav.nav-tabs > li').removeClass('active');
-    	$('ul.nav.nav-tabs > #tab-' + tab).addClass('active');
-    	$('.tab-content-all .tab-content').hide();
-    	$('.tab-content-all #tab-content-' + tab).show();
     });
 
     $('.open-fieldset').on('click', function () {
@@ -59,3 +53,10 @@ $(function () {
         }
     });
 })
+String.prototype.ucFirst = function() {
+	var str = this;
+	if (str.length) {
+		str = str.charAt(0).toUpperCase() + str.slice(1);
+	}
+	return str;
+};

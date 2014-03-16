@@ -1,3 +1,6 @@
+<?
+    $this->Html->script('admin_tabs', array('inline' => false));
+?>
 <ul class="nav nav-tabs">
 <?
 	if (!isset($active)) {
