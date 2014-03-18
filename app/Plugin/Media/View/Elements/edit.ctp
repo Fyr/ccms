@@ -33,9 +33,12 @@
 var uploadURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'upload'))?>';
 var moveURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'move.json'))?>';
 var listURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'getList.json'))?>';
-var mediaGrid = null, lProcess = false;
-var mediaData = null;
+var deleteURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'delete'))?>/{$id}#tab-Article';
+var mediaGrid = null, lProcess = false, mediaData = null;
+var object_type = null, object_id = null;
 $(function () {
+    object_type = $('#MediaObjectType').val();
+    object_id = $('#MediaObjectId').val();
     'use strict';
     var config = {
 		container: '#grid',
@@ -51,7 +54,7 @@ $(function () {
 			table: [],
 			row: [
 				{class: 'icon-color icon-preview', label: 'Open image'},
-				{class: 'icon-color icon-delete', label: 'Delete record', href: '/admin/delete/Media/{$id}'}
+				{class: 'icon-color icon-delete', label: 'Delete record', href: deleteURL}
 			]
 		}
 	}
@@ -65,8 +68,8 @@ $(function () {
         dataType: 'json',
         done: function (e, data) {
             $.each(data.result.files, function (index, file) {
-                file.object_type = $('#MediaObjectType').val();
-                file.object_id = $('#MediaObjectId').val();
+                file.object_type = object_type;
+                file.object_id = object_id;
                 $.post(moveURL, file, function(response){
                     mediaGrid.setData(response.data);
                     mediaGrid.render();

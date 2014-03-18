@@ -18,14 +18,16 @@ class AdminController extends AppController {
 		$this->Auth->logoutRedirect = '/';
 		$this->Auth->authError = __('You can\'t access that page');
 
-		$this->aNavBar = array(
-			'content' => array('label' => __('Content'), 'submenu' => array(
-				array('label' => __('Articles'), 'href' => '/admin/')
-			)),
-			'categories' => array('label' => __('Categories'), 'href' => '/admin/'),
-			'products' => array('label' => __('Products'), 'href' => '/admin/'),
-			'settings' => array('label' => __('Settings'), 'href' => '/admin/')
-		);
+        $this->aNavBar = array(
+            'content' => array('label' => __('Content'), 'submenu' => array(
+                array('label' => __('Static pages'), 'href' => '/admin/'),
+                array('label' => __('News'), 'href' => '/admin/'),
+                array('label' => __('Articles'), 'href' => '/admin/'),
+            )),
+            'categories' => array('label' => __('Categories'), 'href' => '/admin/'),
+            'products' => array('label' => __('Products'), 'href' => '/admin/'),
+            'settings' => array('label' => __('Settings'), 'href' => '/admin/')
+        );
 	}
 
 	protected function getCurrMenu() {

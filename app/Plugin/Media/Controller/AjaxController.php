@@ -50,4 +50,8 @@ class AjaxController extends AppController {
 	    $this->set('response', array('status' => 'OK', 'data' => $aMedia));
 	    $this->set('_serialize', 'response');
 	}
+	
+	public function delete($id) {
+	    
+	}
 }
