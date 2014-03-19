@@ -1,6 +1,11 @@
 <?
 	$this->Html->css(array('jquery.fileupload-ui', '/Table/css/grid'), array('inline' => false));
-	$this->Html->script(array('/Table/js/grid', 'vendor/jquery/jquery.iframe-transport', 'vendor/jquery/jquery.fileupload'), array('inline' => false));
+	$this->Html->script(array(
+	   'vendor/jquery/jquery.iframe-transport', 
+	   'vendor/jquery/jquery.fileupload',
+	   '/Table/js/grid', 
+	   '/Core/js/json_handler'
+	), array('inline' => false));
 ?>
 <style type="text/css">
 .grid {width: 96%}
@@ -8,12 +13,13 @@
 	<table style="width:96%; margin: 0 2%">
 	<tr>
 		<td width="30%">
-			<span class="btn btn-primary fileinput-button">
-	        <i class="icon-plus icon-white"></i>
-	        <span><?=__('Upload files...');?></span>
-	        <!-- The file input field used as target for the file upload widget -->
-	        <input id="fileupload" type="file" name="files[]" multiple>
-	    </span>
+            <span class="btn btn-primary fileinput-button">
+    	        <i class="icon-plus icon-white"></i>
+    	        <span><?=__('Upload files...');?></span>
+    	        <!-- The file input field used as target for the file upload widget -->
+    	        <input id="fileupload" type="file" name="files[]" multiple>
+    	    </span>
+    	    <a class="btn" href="javascript:void(0)" onclick="$.get('/media/ajax/delete/10.json', null, function(response){checkJson(response)}, 'json')">Test</a>
 		</td>
 		<td width="40%" align="center">
 			<?=$this->element('ajax_loader')?>
@@ -33,12 +39,13 @@
 var uploadURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'upload'))?>';
 var moveURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'move.json'))?>';
 var listURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'getList.json'))?>';
-var deleteURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'delete'))?>/{$id}#tab-Article';
+var deleteURL = null;
 var mediaGrid = null, lProcess = false, mediaData = null;
 var object_type = null, object_id = null;
 $(function () {
     object_type = $('#MediaObjectType').val();
     object_id = $('#MediaObjectId').val();
+    deleteURL = $('#MediaBackURL').val();
     'use strict';
     var config = {
 		container: '#grid',
@@ -59,10 +66,11 @@ $(function () {
 		}
 	}
 	$.get(listURL, null, function(response){
-	    config.data = response.data;
-        mediaGrid = new Grid(config); 
+	    if (checkJson(response)) {
+    	    config.data = response.data;
+            mediaGrid = new Grid(config);
+	    }
 	});
-	// 
     $('#fileupload').fileupload({
         url: uploadURL,
         dataType: 'json',

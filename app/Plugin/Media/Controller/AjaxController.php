@@ -1,25 +1,11 @@
 <?php
 App::uses('AppController', 'Controller');
-class AjaxController extends AppController {
+App::uses('PAjaxController', 'Core.Controller');
+class AjaxController extends PAjaxController {
 	public $name = 'Ajax';
-	public $components = array('Auth', 'RequestHandler');
-	// public $layout = 'ajax';
+	public $components = array('Core.PCAuth');
 	public $uses = array('Media.Media');
-	// public $helpers = array('Html');
-
-	public function beforeFilter() {
-		$this->Auth->authorize = array('Controller');
-		$this->Auth->loginAction = array('controller' => 'AdminAuth', 'action' => 'login');
-		$this->Auth->loginRedirect = array('controller' => 'Admin', 'action' => 'index');
-		$this->Auth->logoutRedirect = '/';
-		$this->Auth->authError = __('You can\'t access that page');
-	}
-
-	public function isAuthorized($user) {
-		// CakeLog::write('alert', print_r($user));
-		return true;
-	}
-
+	
 	public function upload() {
 		$this->autoRender = false;
 		App::uses('UploadHandler', 'Media.Vendor');
@@ -46,12 +32,13 @@ class AjaxController extends AppController {
 	}
 	
 	public function getList() {
-	    $aMedia = $this->Media->getList();
-	    $this->set('response', array('status' => 'OK', 'data' => $aMedia));
-	    $this->set('_serialize', 'response');
+	    $this->setResponse($this->Media->getList());
 	}
 	
-	public function delete($id) {
-	    
+	/*
+	public function delete($id = 0) {
+	    $this->PCAdmin->delete($id);
+	    // $this->setResponse(true);
 	}
+	*/
 }

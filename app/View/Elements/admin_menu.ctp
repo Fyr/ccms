@@ -2,7 +2,7 @@
 			<ul class="nav nav-pills">
 				<li class="divider-vertical"></li>
 <?
-	foreach($aMenu as $id => $item) {
+	foreach($aNavBar as $id => $item) {
 		$class = array();
 		$linkOptions = array();
 		$label = $item['label'];

@@ -68,4 +68,11 @@ class Media extends AppModel {
         
     }
     */
+    
+    public function beforeDelete($cascade = true) {
+        // remove actual files before delete a record
+        $media = $this->findById($this->id);
+        
+        return false;
+    }
 }
