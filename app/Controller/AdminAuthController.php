@@ -1,8 +1,8 @@
 <?php
-App::uses('AdminController', 'Controller');
-
-class AdminAuthController extends AdminController {
+App::uses('AppController', 'Controller');
+class AdminAuthController extends AppController {
 	public $name = 'AdminAuth';
+	public $components = array('Core.PCAuth');
 	public $layout = 'login';
 
 	public function login() {

@@ -1,7 +1,8 @@
 <?php
 App::uses('Controller', 'Controller');
-
 class AppController extends Controller {
+    public $paginate;
+	public $aNavBar, $currMenu;
     
     public function __construct($request = null, $response = null) {
 	    $this->_beforeInit();
@@ -12,13 +13,13 @@ class AppController extends Controller {
 	protected function _beforeInit() {
 	    // Add here components, models, helpers etc that will be also loaded while extending child class
 	}
-	
-	protected function _afterInit() {
-	    // Add here components, models, helpers etc that will be also loaded while extending child class
-	}
 
+	protected function _afterInit() {
+	    // after construct actions here
+	}
+	
     public function isAuthorized($user) {
-	    fdebug("App:isAuthorized!\r\n");
+	    // fdebug("App:isAuthorized!\r\n");
 		return true;
 	}
 }
