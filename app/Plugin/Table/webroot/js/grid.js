@@ -369,10 +369,14 @@ Grid = function(config) {
 		}
 		} else {
 			html+= '<tr class="grid-row">';
-			html+= '<td class="grid-no-data" colspan="7">No records found</td>';
+			html+= '<td class="grid-no-data" colspan="' + self.totalCols() +'">No records found</td>';
 			html+= '</tr>';
 		}
 		return html;
+	}
+	
+	this.totalCols = function() {
+	    return self.columns.length + 2;
 	}
 
 	this.renderRow = function(rowData) {
@@ -475,7 +479,7 @@ Grid = function(config) {
 	}
 
 	this.renderTableFooter = function() {
-		var html = '<tr id="last-tr" class="grid-footer table-gradient"><td colspan="10" class="nowrap">';
+		var html = '<tr id="last-tr" class="grid-footer table-gradient"><td colspan="' + self.totalCols() +'" class="nowrap">';
 		html+= self.renderFooter();
 		html+= '</td></tr>';
 		return html;
@@ -699,7 +703,7 @@ Grid = function(config) {
 	this.clearFilter = function() {
 		$('.grid-filter-input', $self).val('');
 		// self.update();
-	}
+    }
 
 	this.getURL = function() {
 		// handle pagination

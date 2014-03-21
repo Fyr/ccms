@@ -1,8 +1,16 @@
 <?php
 App::uses('AppHelper', 'View/Helper');
 class PHTableGridHelper extends AppHelper {
-	public $helpers = array('Paginator', 'Html');
-	private $paginate;
+    public $helpers = array('Paginator', 'Html');
+    private $paginate;
+        
+    private function _getDefaults($modelName, $options = array()) {
+        $defaulOptions = array(
+            'baseURL' => $this->Html->url(array('')),
+            'actions' => $this->_getDefaultActions($modelName)
+        );
+        return $defaulOptions;
+    }
 
 	private function _getDefaultActions($modelName) {
 		$table = array(
@@ -24,7 +32,7 @@ class PHTableGridHelper extends AppHelper {
 		return compact('table', 'row', 'checked');
 	}
 
-	public function render($modelName, $actions = array()) {
+	public function render($modelName, $options = array()) {
 		$this->Html->css('/Table/css/grid', array('inline' => false));
 		$this->Html->script('/Table/js/grid', array('inline' => false));
 		$this->Html->css('/Icons/css/icons', array('inline' => false));
@@ -37,7 +45,8 @@ class PHTableGridHelper extends AppHelper {
 			'count' => $this->Paginator->counter(array('model' => $modelName, 'format' => __('Shown {:start}-{:end} of {:count} records'))),
 		);
 		$defaults = Hash::get($this->paginate, '_defaults');
-		$actions = Hash::merge($this->_getDefaultActions($modelName), $actions);
+		$options = Hash::merge($this->_getDefaults($modelName), $options);
+		fdebug($options['baseURL']);
 		$html = '
 <span id="'.$container_id.'"></span>
 <script type="text/javascript">
@@ -47,9 +56,9 @@ $(document).ready(function(){
 		columns: '.json_encode($this->paginate['_columns']).',
 		data: '.json_encode($this->paginate['_rowset']).',
 		paging: '.json_encode($paging).',
-		settings: {model: "'.$modelName.'", baseURL: "'.$this->Html->url(array('')).'"},
+		settings: {model: "'.$modelName.'", baseURL: "'.$options['baseURL'].'"},
 		defaults: '.json_encode($defaults).',
-		actions: '.json_encode($actions).'
+		actions: '.json_encode($options['actions']).'
 	};
 	var '.$container_id.' = new Grid(config);
 });
