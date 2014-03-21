@@ -10,9 +10,11 @@ class PCArticleComponent extends Component {
 	public function index() {
 		$this->PCTableGrid = $this->_->Components->load('Table.PCTableGrid');
 		$this->PCTableGrid->initialize($this->_);
-		$this->_->paginate = array(
-			'fields' => array('created', 'title', 'slug', 'published')
-		);
+		if (!isset($this->_->paginate)) {
+    		$this->_->paginate = array(
+    			'fields' => array('id', 'created', 'title', 'teaser', 'slug', 'published')
+    		);
+		}
 		$this->PCTableGrid->paginate('Article');
 	}
 

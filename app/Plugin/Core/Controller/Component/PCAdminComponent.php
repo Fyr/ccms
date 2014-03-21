@@ -12,11 +12,11 @@ class PCAdminComponent extends Component {
 	}
 	
 	protected function _getCurrMenu() {
-		$curr_menu = str_ireplace('Admin', '', $this->_->request->controller); // By default curr.menu is the same as controller name
+		$curr_menu = strtolower(str_ireplace('Admin', '', $this->_->request->controller)); // By default curr.menu is the same as controller name
 		foreach($this->_->aNavBar as $currMenu => $item) {
 			if (isset($item['submenu'])) {
 				foreach($item['submenu'] as $_currMenu => $_item) {
-					if ($_currMenu === $curr_menu) {
+					if (strtolower($_currMenu) === $curr_menu) {
 						return $currMenu;
 					}
 				}

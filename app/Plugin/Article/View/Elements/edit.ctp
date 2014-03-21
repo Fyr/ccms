@@ -1,19 +1,15 @@
 <?
 	$this->Html->script('/Article/js/translit_utf', array('inline' => false));
-	$this->Html->css('/Icons/css/icons', array('inline' => false));
 
-	echo $this->PHTableForm->create('Article', array('url' => '#tab-Article'));
 	echo $this->PHTableForm->input('status', array('label' => false, 'multiple' => 'checkbox', 'options' => array('published' => 'Published', 'featured' => 'Featured'), 'class' => 'checkbox inline'));
 	echo $this->PHTableForm->input('title', array('onkeyup' => 'article_onChangeTitle()'));
 	echo $this->PHTableForm->input('slug', array('onchange' => 'article_onChangeSlug()'));
 	echo $this->PHTableForm->input('teaser');
 	// echo $this->PHTableForm->editor('body');
-	echo $this->element('Table.btn_save');
 	echo $this->PHTableForm->hidden('Media.object_type', array('value' => 'Article'));
 	echo $this->PHTableForm->hidden('Media.object_id', array('value' => $this->request->data('Article.id')));
 	$url = $this->Html->url(array('plugin' => '', 'controller' => 'admin', 'action' => 'delete')).'/{$id}?model=Media.Media&backURL='.urlencode($this->Html->url(array())).'#tab-Media';
 	echo $this->PHTableForm->hidden('Media.backURL', array('value' => $url));
-	echo $this->PHTableForm->end();
 ?>
 <script type="text/javascript">
 var slug_EditMode = <?=(($this->request->data('Article.slug'))) ? 'true' : 'false'?>;

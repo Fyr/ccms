@@ -1,6 +1,5 @@
 <?php
 App::uses('Component', 'Controller');
-// App::uses('Auth', 'Controller/Component');
 class PCAuthComponent extends Component {
     private $_;
 

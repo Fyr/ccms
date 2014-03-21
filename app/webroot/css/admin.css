@@ -187,7 +187,7 @@ label.checkbox {
 }
 .form-horizontal .form-actions {
 	text-align: center;
-	padding: 10px 0 0 0;
+	padding: 0;
 	margin: 0;
 }
 
@@ -256,8 +256,16 @@ ul.nav.nav-tabs > li.active > a {
 ul.nav.nav-tabs > li > a:hover {
 	background: #fafafa;
 }
+
 .form-actions {
+    text-align: center;
+    background: none;
+    border: 0px solid transparent;
+}
+.admin-content .form-actions {
 	background: #fafafa;
+	padding-top: 10px;
+	border: 1px solid #E5E5E5;
 }
 .shadow {
 	-webkit-box-shadow:0 1px 10px rgba(0,0,0,.1);

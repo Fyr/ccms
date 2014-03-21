@@ -1,5 +1,5 @@
 <?
-	$this->Html->css(array('jquery.fileupload-ui', '/Table/css/grid'), array('inline' => false));
+	$this->Html->css(array('jquery.fileupload-ui', '/Table/css/grid', '/Icons/css/icons'), array('inline' => false));
 	$this->Html->script(array(
 	   'vendor/jquery/jquery.iframe-transport', 
 	   'vendor/jquery/jquery.fileupload',

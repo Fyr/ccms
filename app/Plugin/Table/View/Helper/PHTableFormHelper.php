@@ -29,8 +29,20 @@ class PHTableFormHelper extends FormHelper {
 	}
 
 	public function submit($fieldName = 'Save', $options = array()) {
-		$options = array_merge(array('class' => 'btn btn-primary', 'div' => 'form-actions'), $options);
-		return parent::submit($fieldName, $options);
+		$options = array_merge(array('class' => 'btn btn-primary', 'type' => 'submit', 'div' => 'form-actions'), $options);
+		return $this->button($fieldName, $options);
+	}
+	
+	public function button($fieldName, $options = array()) {
+	    $options = array_merge(array('class' => 'btn', 'type' => 'button'), $options);
+		return parent::button($fieldName, $options);
+	}
+	
+	public function formActions(array $buttons) {
+	    $html = '<div class="form-actions">';
+	    $html.= implode(' ', $buttons);
+        $html.= '</div>';
+        echo $html;
 	}
 
 	/**
