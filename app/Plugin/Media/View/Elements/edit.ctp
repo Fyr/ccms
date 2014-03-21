@@ -19,7 +19,6 @@
     	        <!-- The file input field used as target for the file upload widget -->
     	        <input id="fileupload" type="file" name="files[]" multiple>
     	    </span>
-    	    <a class="btn" href="javascript:void(0)" onclick="$.get('/media/ajax/delete/10.json', null, function(response){checkJson(response)}, 'json')">Test</a>
 		</td>
 		<td width="40%" align="center">
 			<?=$this->element('ajax_loader')?>

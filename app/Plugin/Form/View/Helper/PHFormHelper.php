@@ -1,10 +1,10 @@
 <?php
 /**
  * Wrapper for standart Form helper
- * Customizes HTML inputs for filters and uses the same parameters for Form helper methods
+ * Customizes default HTML inputs
  */
 App::uses('FormHelper', 'View/Helper');
-class PHTableFormHelper extends FormHelper {
+class PHFormHelper extends FormHelper {
 	// var $helpers = array('Form', 'Html');
 	public function create($model, $options = array()) {
 		$options['class'] = (isset($options['class']) && $options['class']) ? $options['class'] : 'form-horizontal';

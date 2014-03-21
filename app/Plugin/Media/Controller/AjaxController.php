@@ -35,10 +35,4 @@ class AjaxController extends PAjaxController {
 	    $this->setResponse($this->Media->getList());
 	}
 	
-	/*
-	public function delete($id = 0) {
-	    $this->PCAdmin->delete($id);
-	    // $this->setResponse(true);
-	}
-	*/
 }

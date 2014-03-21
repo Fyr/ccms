@@ -1,2 +1,2 @@
 <?
-	echo $this->PHTableForm->editor('body', array('fullwidth' => true));
+	echo $this->PHForm->editor('body', array('fullwidth' => true));
