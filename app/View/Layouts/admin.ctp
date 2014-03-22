@@ -28,15 +28,15 @@
 <header>
 	<nav class="navbar nav-pills navbar-fixed-top">
 		<div class="navbar-inner">
-			<?=$this->element('admin_menu')?>
-			<?=$this->element('admin_curruser')?>
-			<?=$this->element('admin_shortcuts')?>
+			<?=$this->element('/UI/admin_menu')?>
+			<?=$this->element('/UI/admin_curruser')?>
+			<?=$this->element('/UI/admin_shortcuts')?>
 		</div>
 	</nav>
 </header>
 <main>
 	<!--aside>
-		<?=$this->element('admin_sb')?>
+		<?=$this->element('/UI/admin_sb')?>
 	</aside-->
 	<section class="table-column container-fluid">
 		<div class="row-fluid">
@@ -48,7 +48,7 @@
     </section>
 </main>
 <footer class="text-center">
-	<?=$this->element('admin_footer')?>
+	<?=$this->element('/UI/admin_footer')?>
 </footer>
 </div>
 <?=$this->element('sql_dump'); ?>
