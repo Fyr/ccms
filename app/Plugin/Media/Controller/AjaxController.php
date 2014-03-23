@@ -28,11 +28,11 @@ class AjaxController extends PAjaxController {
 		$data = compact('media_type', 'object_type', 'object_id', 'tmp_name', 'file', 'ext');
 		$this->Media->uploadMedia($data);
 		
-		$this->getList();
+		$this->getList($object_type, $object_id);
 	}
 	
-	public function getList() {
-	    $this->setResponse($this->Media->getList());
+	public function getList($object_type, $object_id) {
+	    $this->setResponse($this->Media->getList(compact('object_type', 'object_id')));
 	}
 	
 }

@@ -1,4 +1,9 @@
 <?
+/**
+ * Renders Media Widget
+ * @param str $object_type
+ * @param int $object_id
+ */
 	$this->Html->css(array('jquery.fileupload-ui', '/Table/css/grid', '/Icons/css/icons'), array('inline' => false));
 	$this->Html->script(array(
 	   'vendor/jquery/jquery.iframe-transport', 
@@ -37,13 +42,15 @@
 <script>
 var uploadURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'upload'))?>';
 var moveURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'move.json'))?>';
-var listURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'getList.json'))?>';
+var listURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'getList', $object_type, $object_id))?>.json';
 var deleteURL = null;
 var mediaGrid = null, lProcess = false, mediaData = null;
-var object_type = null, object_id = null;
+var object_type = '<?=$object_type?>', object_id = <?=$object_id?>;
 $(function () {
+    /*
     object_type = $('#MediaObjectType').val();
     object_id = $('#MediaObjectId').val();
+    */
     deleteURL = $('#MediaBackURL').val();
     'use strict';
     var config = {
