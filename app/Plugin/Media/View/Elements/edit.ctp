@@ -4,12 +4,15 @@
  * @param str $object_type
  * @param int $object_id
  */
-	$this->Html->css(array('jquery.fileupload-ui', '/Table/css/grid', '/Icons/css/icons'), array('inline' => false));
+	$this->Html->css(array('jquery.fileupload-ui', '/Table/css/grid', '/Icons/css/icons', '/Media/css/thumbs'), array('inline' => false));
 	$this->Html->script(array(
 	   'vendor/jquery/jquery.iframe-transport', 
 	   'vendor/jquery/jquery.fileupload',
+	   'vendor/tmpl.min',
 	   '/Table/js/grid', 
-	   '/Core/js/json_handler'
+	   '/Table/js/format', 
+	   '/Core/js/json_handler',
+	   '/Media/js/media_grid'
 	), array('inline' => false));
 ?>
 <style type="text/css">
@@ -17,7 +20,7 @@
 </style>
 	<table style="width:96%; margin: 0 2%">
 	<tr>
-		<td width="30%">
+		<td width="20%" valign="middle">
             <span class="btn btn-primary fileinput-button">
     	        <i class="icon-plus icon-white"></i>
     	        <span><?=__('Upload files...');?></span>
@@ -25,68 +28,66 @@
     	        <input id="fileupload" type="file" name="files[]" multiple>
     	    </span>
 		</td>
-		<td width="40%" align="center">
-			<?=$this->element('ajax_loader')?>
-		</td>
-		<td width="30%">&nbsp;</td>
-	</tr>
-	<tr>
-	   <td colspan="3">
-            <div id="progress" class="progress progress-success progress-striped">
+		<td width="80%" align="center" valign="middle">
+			<div id="progress" class="progress progress-success progress-striped" style="margin-bottom: 0;">
                 <div class="bar"></div>
             </div>
-	   </td>
+		</td>
 	</tr>
 	</table>
-	<span id="grid"></span>
+	<br/>
+<?
+	// $baseURL = $this->ObjectType->getBaseURL($object_type);
+	$deleteURL = $this->Html->url(array('plugin' => '', 'controller' => 'admin', 'action' => 'delete'))
+		.'/{%=o.id%}?model=Media.Media&backURL={%=escape(window.location.href)%}';
+?>
+	<table class="media-grid" style="width:96%; margin: 0 2%">
+	<tr>
+		<td class="media-thumbs" width="65%" style="border-right: 1px solid #ddd; vertical-align: top;padding-right: 10px"></td>
+		<td class="media-info" width="35%" style="padding-left: 10px; vertical-align: top;">
+			<script type="text/x-tmpl" id="media-info">
+				<button type="button" class="btn btn-success" onclick="mediaGrid.actionSetMain({%=o.id%})"><i class="icon-white icon-ok"></i> <?=__('Set as main')?></button>
+				<button type="button" class="btn btn-danger" onclick="if (confirm('<?=__('Are your sure to delete this record?')?>')) { mediaGrid.actionDelete({%=o.id%}); }"><i class="icon-white icon-trash"></i> <?=__('Delete')?></button>
+				<br/><br/>
+				<b>Original image</b><br/>
+				Uploaded: {%=o.created%}<br/>
+				File size: {%=Format.fileSize(o.file_size)%}<br/>
+				<!--button type="button" class="btn btn-mini" onclick="media_enlarge({%=o.id%})"><i class="icon-search"></i> <?=__('Enlarge')?></button-->
+			</script>
+		</td>
+	</tr>
+	</table>
 <script>
-var uploadURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'upload'))?>';
-var moveURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'move.json'))?>';
-var listURL = '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'getList', $object_type, $object_id))?>.json';
-var deleteURL = null;
-var mediaGrid = null, lProcess = false, mediaData = null;
-var object_type = '<?=$object_type?>', object_id = <?=$object_id?>;
+var mediaGrid = null, object_type = '<?=$object_type?>', object_id = <?=$object_id?>;
+var mediaURL = {
+	upload: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'upload'))?>',
+	move: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'move'))?>.json',
+	list: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'getList', $object_type, $object_id))?>.json',
+	delete: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'delete', $object_type, $object_id))?>/{$id}.json',
+	setMain: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'setMain', $object_type, $object_id))?>/{$id}.json'
+};
 $(function () {
-    /*
-    object_type = $('#MediaObjectType').val();
-    object_id = $('#MediaObjectId').val();
-    */
-    deleteURL = $('#MediaBackURL').val();
     'use strict';
-    var config = {
-		container: '#grid',
-		settings: {showFilter: false, model: 'Media'},
-		data: mediaData,
-		columns: [
-			{key: 'image', showSorting: false, format: 'img', align: 'center'},
-			{key: 'image', label: 'URL', showSorting: false}/*,
-			{key: 'size', label: 'File size', format: 'filesize'},
-			{key: 'main', label: 'Main image', showSorting: false}*/
-		],
-		actions: {
-			table: [],
-			row: [
-				{class: 'icon-color icon-preview', label: 'Open image'},
-				{class: 'icon-color icon-delete', label: 'Delete record', href: deleteURL}
-			]
-		}
-	}
-	$.get(listURL, null, function(response){
+	$.get(mediaURL.list, null, function(response){
 	    if (checkJson(response)) {
-    	    config.data = response.data;
-            mediaGrid = new Grid(config);
+    	    var config = {
+    	        container: '.media-grid',
+    	        data: response.data,
+    	        actions: mediaURL
+    	    }
+            mediaGrid = new MediaGrid(config);
 	    }
 	});
     $('#fileupload').fileupload({
-        url: uploadURL,
+        url: mediaURL.upload,
         dataType: 'json',
         done: function (e, data) {
             $.each(data.result.files, function (index, file) {
                 file.object_type = object_type;
                 file.object_id = object_id;
-                $.post(moveURL, file, function(response){
+                $.post(mediaURL.move, file, function(response){
                     mediaGrid.setData(response.data);
-                    mediaGrid.render();
+                    mediaGrid.update();
                 }, 'json');
             });
         },
