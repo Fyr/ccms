@@ -19,8 +19,11 @@ class PAjaxController extends AppController {
 	    }
 	}
     
-	public function setResponse($data) {
-	    $this->_response = array('status' => self::STATUS_OK, 'data' => $data);
+	public function setResponse($data = array()) {
+	    $this->_response = array('status' => self::STATUS_OK);
+	    if ($data) {
+	    	$this->_response['data'] = $data;
+	    }
 	}
 	
 	public function getResponse() {
