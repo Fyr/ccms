@@ -4,15 +4,15 @@
  * @param str $object_type
  * @param int $object_id
  */
-	$this->Html->css(array('jquery.fileupload-ui', '/Table/css/grid', '/Icons/css/icons', '/Media/css/media'), array('inline' => false));
+	$this->Html->css(array('jquery.fileupload-ui', '/Media/css/media'), array('inline' => false));
 	$this->Html->script(array(
 	   'vendor/jquery/jquery.iframe-transport', 
 	   'vendor/jquery/jquery.fileupload',
 	   'vendor/tmpl.min',
-	   '/Table/js/grid', 
 	   '/Table/js/format', 
 	   '/Core/js/json_handler',
-	   '/Media/js/media_grid'
+	   '/Media/js/media_grid',
+	   '/Media/js/media_ui'
 	), array('inline' => false));
 ?>
 	<table width="100%">
@@ -63,7 +63,7 @@
 		</td>
 	</tr>
 	</table>
-<script>
+<script type="text/javascript">
 var mediaGrid = null, object_type = '<?=$object_type?>', object_id = <?=$object_id?>;
 var mediaURL = {
 	upload: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'upload'))?>',
@@ -72,39 +72,4 @@ var mediaURL = {
 	delete: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'delete', $object_type, $object_id))?>/{$id}.json',
 	setMain: '<?=$this->Html->url(array('plugin' => 'media', 'controller' => 'ajax', 'action' => 'setMain', $object_type, $object_id))?>/{$id}.json'
 };
-$(function () {
-    'use strict';
-	$.get(mediaURL.list, null, function(response){
-	    if (checkJson(response)) {
-    	    var config = {
-    	        container: '.media-grid',
-    	        data: response.data,
-    	        actions: mediaURL
-    	    }
-            mediaGrid = new MediaGrid(config);
-	    }
-	});
-    $('#fileupload').fileupload({
-        url: mediaURL.upload,
-        dataType: 'json',
-        done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                file.object_type = object_type;
-                file.object_id = object_id;
-                $.post(mediaURL.move, file, function(response){
-                    mediaGrid.setData(response.data);
-                    mediaGrid.update();
-                }, 'json');
-            });
-        },
-        progressall: function (e, data) {
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            $('#progress .bar').css(
-                'width',
-                progress + '%'
-            );
-        }
-    }).prop('disabled', !$.support.fileInput)
-        .parent().addClass($.support.fileInput ? undefined : 'disabled');
-});
 </script>
