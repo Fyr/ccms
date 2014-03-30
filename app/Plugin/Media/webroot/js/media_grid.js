@@ -1,4 +1,3 @@
-
 MediaGrid = function(config) {
 	var self = this;
 
@@ -57,25 +56,33 @@ MediaGrid = function(config) {
 	
 	this.render = function() {
 		$('.media-thumbs', $self).html(self.renderThumbs());
-		$('.media-info', $self).html('');
+		if (self.data && self.data.length) {
+			self.showInfo(self.getID(self.data[0]));
+		} else {
+			$('.media-info', $self).html('No media data');
+		}
 	}
 	
 	this.renderThumbs = function() {
-	    var html = '';
-	    for(var i = 0; i < self.data.length; i++) {
-	        html+= self.renderThumb(self.data[i]);
-	    }
-	    return html;
+		var html = '';
+		if (self.data && self.data.length) {
+			for(var i = 0; i < self.data.length; i++) {
+			    html+= self.renderThumb(self.data[i]);
+			}
+		} else {
+			html = Format.tag('div', {class: 'alert well-large'}, 'No media files found')
+		}
+		return html;
 	}
-	
+		
 	this.renderThumb = function(rowData) {
 		var _class = 'img-rounded pull-left thumb';
-		if (self.getValue('Media.main', rowData)) {
+		if (self.getValue(self.settings.model + '.main', rowData)) {
 			_class+= ' main-thumb';
 		}
 		return Format.tag('div', 
 			{class: _class, 'data-thumb': self.getID(rowData)}, 
-			Format.tag('img', {src: self.getValue('Media.image', rowData), alt: ''})
+			Format.tag('img', {src: self.getValue(self.settings.model + '.image', rowData), alt: ''})
 		);
 	}
 	
@@ -93,12 +100,26 @@ MediaGrid = function(config) {
 	
 	this.showInfo = function(id) {
 		var rowData = self.getDataByID(id);
-		$('.media-info', $self).html(self.renderInfo(rowData[self.settings.model]));
+		self.renderInfo(rowData[self.settings.model]);
 		self.bindInfo(rowData);
+		self.updateImageURL(id);
 	}
 	
 	this.renderInfo = function(rowData) {
-		return tmpl('media-info', rowData);
+		$('.media-info', $self).html(tmpl('media-info', rowData));
+		// var size = $('#media-width', $self).val() + 'x' + $('#media-height', $self).val();
+	}
+	
+	this.updateImageURL = function(id) {
+		var rowData = self.getDataByID(id);
+		var w = $('#media-w', $self).val();
+		var h = $('#media-h', $self).val();
+		var size = (w || h) ?  w + 'x' + h : 'noresize';
+		$('#media-url', $self).val(self.getImageURL(rowData[self.settings.model], size));
+	}
+	
+	this.getImageURL = function(rowData, size) {
+		return '/media/router/index/' + rowData.object_type + '/' + rowData.id + '/' + size + '/' + rowData.file + rowData.ext;
 	}
 	
 	this.bindInfo = function(rowData) {

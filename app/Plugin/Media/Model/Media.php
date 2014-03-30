@@ -48,6 +48,9 @@ class Media extends AppModel {
 		    $path = pathinfo($tmp_name);
 		    @unlink($path['dirname'].'/thumbnail/'.$path['basename']);
 		}
+		
+		// Set main image if it was first image
+		$this->initMain($object_type, $object_id);
     }
     
     /**
@@ -73,17 +76,45 @@ class Media extends AppModel {
     }
     */
 	
+    /**
+     * Set main image
+     *
+     * @param unknown_type $id
+     * @param unknown_type $object_type
+     * @param unknown_type $object_id
+     */
 	public function setMain($id , $object_type = null, $object_id = null) {
 		// Clear main flag for all media
 		if ($object_id && $object_type) {
-			$this->updateAll(array('main' => 0), compact('object_type', 'object_id'));
-			fdebug(array('main' => 0));
+			$conditions = compact('object_type', 'object_id');
+			$conditions['media_type'] = 'image';
+			$this->updateAll(array('main' => 0), $conditions);
 		} else {
 			$media = $this->findById($id);
 			$this->setMain($id, $media['Media']['object_type'], $media['Media']['object_id']);
 			return;
 		}
 		$this->save(array('id' => $id, 'main' => 1));
+	}
+	
+	/**
+	 * Set main image for media
+	 *
+	 * @param str $object_type
+	 * @param int $object_id
+	 */
+	public function initMain($object_type, $object_id) {
+		$media = $this->find('first', array(
+			'conditions' => array('object_type' => $object_type, 'object_id' => $object_id, 'media_type' => 'image'),
+			'order' => array('main' => 'DESC', 'id'  => 'ASC')
+		));
+		if ($media) {
+			// we have some media records but no main 
+			if (!$media['Media']['main']) {
+				$media['Media']['main'] = 1;
+				$this->save($media);
+			}
+		} // no records
 	}
 	
     /**

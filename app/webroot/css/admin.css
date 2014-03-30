@@ -4,6 +4,7 @@
 body {
 	max-width: 1440px;
 }
+h5 {margin: 15px 0 5px 0; }
 main {
 	display: table;
 	width: 100%;
