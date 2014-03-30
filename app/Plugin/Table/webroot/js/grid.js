@@ -385,7 +385,7 @@ Grid = function(config) {
 		var col;
 		for(var i = 0; i < self.columns.length; i++) {
 			col = self.columns[i];
-			html+= self.renderTableCell(self.getColVal(col, rowData), col, rowData);
+			html+= self.renderTableCell(self.getValue(col, rowData), col, rowData);
 		}
 		return html;
 	}
@@ -395,7 +395,7 @@ Grid = function(config) {
 		return {model: field[0], field: field[1]};
 	}
 
-	this.getColVal = function(column, rowData) {
+	this.getValue = function(column, rowData) {
 		if (self.settings.model) {
 			var col = self.getModelField(column.key);
 			return rowData[col.model][col.field];
@@ -464,16 +464,9 @@ Grid = function(config) {
 		} else if (col.format == 'boolean') {
 			return (value) ? '<i class="icon-color icon-check"></i>' : '';
 		} else if (col.format == 'filesize') {
-			var sizes = ['', 'Kb', 'Mb', 'Gb'];
-			for (var i = 0; i < sizes.length; i++) {
-				if (value < 1024) {
-					return Math.round(value * 10, 1) / 10 + '<span class="file-size">' + sizes[i] + '</span>';
-				}
-				value = value / 1024;
-			}
-			return
+			return Format.fileSize(value);
 		} else if (col.format == 'img') {
-			return '<img src="' + value + '" alt="" />';
+			return Format.img(value);
 		}
 		return value;
 	}

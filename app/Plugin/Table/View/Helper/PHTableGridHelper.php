@@ -39,9 +39,8 @@ class PHTableGridHelper extends AppHelper {
 	}
 
 	public function render($modelName, $options = array()) {
-		$this->Html->css('/Table/css/grid', array('inline' => false));
-		$this->Html->script('/Table/js/grid', array('inline' => false));
-		$this->Html->css('/Icons/css/icons', array('inline' => false));
+		$this->Html->css(array('/Table/css/grid', '/Icons/css/icons'), array('inline' => false));
+		$this->Html->script(array('/Table/js/grid', '/Table/js/format'), array('inline' => false));
 
 		$this->paginate = $this->viewVar('_paginate.'.$modelName);
 		$container_id = 'grid_'.$modelName;
