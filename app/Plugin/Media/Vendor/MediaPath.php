@@ -28,6 +28,15 @@ class MediaPath {
 		return $_ret;
     }
 
+    /**
+     * Return real media-file path with name
+     *
+     * @param str $type - object type
+     * @param int $id - media ID
+     * @param str $size - size of image: noresize, "<width>x", "<width>x<height>"
+     * @param str $filename - file name with extension. Used to speed up image output
+     * @return str
+     */
     function getFileName($type, $id, $size, $filename) {
     	$aFName = $this->getFileInfo($filename);
     	$aSize = $this->getSizeInfo($size);
@@ -40,6 +49,13 @@ class MediaPath {
     	return $_ret;
     }
 
+    /**
+     * Return real path for media-file
+     *
+     * @param str $type - object type
+     * @param int $id - media ID
+     * @return str
+     */
     function getPath($type, $id) {
 		return $this->getPagePath($type, $id).$id.'/';
     }
@@ -54,6 +70,14 @@ class MediaPath {
         return PATH_FILES_UPLOAD.strtolower($type).'/';
     }
 
+    /**
+     * Return URL for image
+     *
+     * @param str $type - object type
+     * @param int $id - media ID
+     * @param str $size - size of image: noresize, "<width>x", "<width>x<height>"
+     * @param str
+     */
     function getImageUrl($type, $id, $size, $filename) {
     	if (!$size) {
     		$size = 'noresize';
@@ -61,6 +85,14 @@ class MediaPath {
 		return '/media/router/index/'.$type.'/'.$id.'/'.$size.'/'.$filename;
     }
 
+    /**
+     * Return raw URL for file. Can be used for download binary file
+     *
+     * @param str $type - object type
+     * @param int $id - media ID
+     * @param str $filename - file name with extension. Used to speed up image output
+     * @return str
+     */
     function getRawUrl($type, $id, $filename) {
     	$page = floor($id/100);
     	return '/files/'.$type.'/'.$page.'/'.$id.'/'.rawurlencode($filename);
