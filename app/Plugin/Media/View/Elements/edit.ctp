@@ -37,14 +37,16 @@
 		<td class="media-thumbs" width="65%">
 			<!-- thumbs content here -->
 		</td>
-		<td class="media-info" width="35%">
+		<td class="media-info form-horizontal" width="35%">
 			<script type="text/x-tmpl" id="media-info">
 				<button type="button" class="btn btn-success" onclick="mediaGrid.actionSetMain({%=o.id%})"><i class="icon-white icon-ok"></i> <?=__('Set as main')?></button>
 				<button type="button" class="btn btn-danger" onclick="if (confirm('<?=__('Are your sure to delete this record?')?>')) { mediaGrid.actionDelete({%=o.id%}); }"><i class="icon-white icon-trash"></i> <?=__('Delete')?></button>
 				<br/>
 				<h5><?=__('Original image')?></h5>
 				<?=__('Uploaded')?>: {%=o.created%}<br/>
-				<?=__('File size')?>: {%=Format.fileSize(o.file_size)%}<br/>
+				<?=__('File name')?>: {%=o.orig_fname%}<br/>
+				<?=__('File size')?>: {%=Format.fileSize(o.orig_fsize)%}<br/>
+				<?=__('Resolution')?>: {%=o.orig_w%}x{%=o.orig_h%}px<br/>
 				<!--button type="button" class="btn btn-mini" onclick="media_enlarge({%=o.id%})"><i class="icon-search"></i> <?=__('Enlarge')?></button-->
 				<h5><?=__('Links')?></h5>
 				<?=__('Original size')?>:<br/>

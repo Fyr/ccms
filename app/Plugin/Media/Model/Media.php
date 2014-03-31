@@ -49,6 +49,14 @@ class Media extends AppModel {
 		    @unlink($path['dirname'].'/thumbnail/'.$path['basename']);
 		}
 		
+		// Save original image resolution and file size
+		$file = $this->PHMedia->getFileName($object_type, $id, null, $file.$ext);
+		
+		App::uses('Image', 'Media.Vendor');
+		$image = new Image();
+		$image->load($file);
+		$this->save(array('id' => $id, 'orig_w' => $image->getSizeX(), 'orig_h' => $image->getSizeY(), 'orig_fsize' => filesize($file)));
+		
 		// Set main image if it was first image
 		$this->initMain($object_type, $object_id);
     }
@@ -65,7 +73,6 @@ class Media extends AppModel {
         foreach($aRows as &$_row) {
             $row = $_row['Media'];
             $_row['Media']['image'] = $this->PHMedia->getImageUrl($row['object_type'], $row['id'], '100x80', $row['file'].$row['ext']);
-            $_row['Media']['file_size'] = filesize($this->PHMedia->getFileName($row['object_type'], $row['id'], '', $row['file'].$row['ext']));
         }
         return $aRows;
     }

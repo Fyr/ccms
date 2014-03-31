@@ -14,7 +14,8 @@ class AjaxController extends PAjaxController {
 	}
 
 	public function move() {
-		$tmp_name = PATH_FILES_UPLOAD.$this->request->data('name');
+		$orig_fname = $this->request->data('name');
+		$tmp_name = PATH_FILES_UPLOAD.$orig_fname;
 		list($media_type) = explode('/', $this->request->data('type'));
 		if (!in_array($media_type, $this->Media->types)) {
 		    $media_type = 'bin_file';
@@ -25,7 +26,7 @@ class AjaxController extends PAjaxController {
 		$file = $media_type; // $path['filename'];
 		$ext = '.'.$path['extension'];
 		
-		$data = compact('media_type', 'object_type', 'object_id', 'tmp_name', 'file', 'ext');
+		$data = compact('media_type', 'object_type', 'object_id', 'tmp_name', 'file', 'ext', 'orig_fname');
 		$this->Media->uploadMedia($data);
 		
 		$this->getList($object_type, $object_id);
