@@ -30,7 +30,7 @@ class PHTableGridHelper extends AppHelper {
 		$row = array(
 			'edit' => array('class' => 'icon-color icon-edit', 'label' => __('Edit record'), 'href' => urldecode($editURL)),
 			// array('class' => 'icon-color icon-delete', 'label' => __('Delete record'), 'href' => urldecode($deleteURL).'?model='.$modelName.'&backURL='.urlencode($backURL))
-			'delete' => $this->Html->link('', $deleteURL, array('class' => 'icon-color icon-delete'), __('Are you sure to delete this record?'))
+			'delete' => $this->Html->link('', $deleteURL, array('class' => 'icon-color icon-delete', 'title' => __('Delete record')), __('Are you sure to delete this record?'))
 		);
 		$checked = array(
 			array('icon' => 'icon-color icon-delete', 'label' => __('Delete checked records'))

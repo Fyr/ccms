@@ -6,6 +6,7 @@
  */
 App::uses('Component', 'Controller');
 class PCTableGridComponent extends Component {
+	public $components = array('Paginator');
 
 	/**
 	 * Parent controller
@@ -86,11 +87,14 @@ class PCTableGridComponent extends Component {
 
 	private function _denormalizeField($field) {
 		$aInfo = explode('.', $field);
-		return array('model' => $aInfo[0], 'field' => $aInfo[1]);
+		return array('model' => $aInfo[0], 'alias' => $aInfo[0], 'field' => $aInfo[1]);
 	}
 
 	private function _getFieldType($field) {
 		$key = $this->_denormalizeField($field);
+		if (!isset($this->_->{$key['model']})) {
+			$key['model'] = $this->model->name;
+		}
 		$schema = $this->_->{$key['model']}->schema();
 		if (isset($schema[$key['field']])) {
 			return $schema[$key['field']]['type'];
@@ -138,13 +142,19 @@ class PCTableGridComponent extends Component {
 		$this->_initFields();
 		$this->_initDefaults();
 		// $this->_initConditions();
-		$this->_->paginate[$modelName] = $this->paginate;
+		
+		$this->Paginator->settings = array($modelName => $this->paginate); // force to load our settings into Paginator
+		// $this->_->paginate = array($modelName => $this->paginate);
 		// fdebug($this->paginate, 'paginate.log');
 		$filters = ($filters) ? $filters : $this->_->params['named'];
 		$this->setFilter($filters);
-		$aRowset = $this->_->paginate($modelName, $this->getFilter());
-		$this->_->paginate[$modelName]['_rowset'] = $aRowset;
-		$this->_->set('_paginate', $this->_->paginate);
+		$aRowset = $this->Paginator->paginate($modelName, $this->getFilter());
+		// $aRowset = $this->_->paginate($modelName, $this->getFilter());
+		// $this->paginate[$modelName]['_rowset'] = $aRowset;
+		$_paginate = array();
+		$_paginate[$modelName] = $this->paginate;
+		$_paginate[$modelName]['_rowset'] = $aRowset;
+		$this->_->set('_paginate', $_paginate);
 		return $aRowset;
 	}
 

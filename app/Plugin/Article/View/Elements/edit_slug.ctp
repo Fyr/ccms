@@ -3,6 +3,7 @@
 	echo $this->PHForm->input('slug', array('onchange' => 'article_onChangeSlug()'));
 ?>
 <script type="text/javascript">
-var slug_EditMode = <?=(($this->request->data('Article.slug'))) ? 'true' : 'false'?>;
+var slug_EditMode = <?=(($this->request->data($this->PHForm->defaultModel.'.slug'))) ? 'true' : 'false'?>; // <?=$this->PHForm->defaultModel?>
+
 </script>
 

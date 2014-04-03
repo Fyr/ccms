@@ -8,17 +8,20 @@ class ObjectTypeHelper extends AppHelper {
             'index' => array(
                 'Article' => __('Articles'),
                 'Page' => __('Static pages'),
-                'News' => __('News')
+                'News' => __('News'),
+                'Category' => __('Categories')
             ), 
             'create' => array(
                 'Article' => __('Create Article'),
                 'Page' => __('Create Static page'),
-                'News' => __('Create News article')
+                'News' => __('Create News article'),
+                'Category' => __('Create Category')
             ),
             'edit' => array(
                 'Article' => __('Edit Article'),
                 'Page' => __('Edit Static page'),
-                'News' => __('Edit News article')
+                'News' => __('Edit News article'),
+                'Category' => __('Edit Category')
             )
         );
         return $Titles;
