@@ -9,30 +9,33 @@ class ObjectTypeHelper extends AppHelper {
                 'Article' => __('Articles'),
                 'Page' => __('Static pages'),
                 'News' => __('News'),
-                'Category' => __('Categories')
+                'Category' => __('Categories'),
+                'Subcategory' => __('Subcategories')
             ), 
             'create' => array(
                 'Article' => __('Create Article'),
                 'Page' => __('Create Static page'),
                 'News' => __('Create News article'),
-                'Category' => __('Create Category')
+                'Category' => __('Create Category'),
+                'Subcategory' => __('Create Subcategory')
             ),
             'edit' => array(
                 'Article' => __('Edit Article'),
                 'Page' => __('Edit Static page'),
                 'News' => __('Edit News article'),
-                'Category' => __('Edit Category')
+                'Category' => __('Edit Category'),
+                'Subcategory' => __('Edit Subcategory')
             )
         );
         return $Titles;
     }
     
-    public function getTitle($action, $object_type) {
+    public function getTitle($action, $objectType) {
         $aTitles = $this->_getTitles();
-        return (isset($aTitles[$action][$object_type])) ? $aTitles[$action][$object_type] : $aTitles[$action]['Article'];
+        return (isset($aTitles[$action][$objectType])) ? $aTitles[$action][$objectType] : $aTitles[$action]['Article'];
     }
     
-    public function getBaseURL($object_type) {
-        return $this->Html->url(array('action' => 'index', $object_type));
+    public function getBaseURL($objectType, $objectID) {
+        return $this->Html->url(array('action' => 'index', $objectType, $objectID));
     }
 }

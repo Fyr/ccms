@@ -23,12 +23,13 @@ class PHTableGridHelper extends AppHelper {
 			'add' => array('class' => 'icon-color icon-add', 'label' => __('Add record'), 'href' => $this->Html->url(array('action' => 'edit'))),
 			'filter' => array('class' => 'icon-color icon-filter-settings grid-show-filter', 'label' => __('Show filter settings'))
 		);
-		$backURL = $this->Html->url(array('action' => 'index'));
-		$editURL = $this->Html->url(array('action' => 'edit', '{$id}'));
-		$deleteURL = $this->Html->url(array('action' => 'delete', '{$id}'));
-		$deleteURL = urldecode($deleteURL).'?model='.$modelName.'&backURL='.urlencode($backURL);
+		$objectType = $this->viewVar('objectType');
+		$objectID = $this->viewVar('objectID');
+		$backURL = $this->Html->url(array('action' => 'index', $objectType, $objectID));
+		$editURL = $this->Html->url(array('action' => 'edit')).'/{$id}';
+		$deleteURL = $this->Html->url(array('action' => 'delete')).'/{$id}?model='.$modelName.'&backURL='.urlencode($backURL);
 		$row = array(
-			'edit' => array('class' => 'icon-color icon-edit', 'label' => __('Edit record'), 'href' => urldecode($editURL)),
+			'edit' => array('class' => 'icon-color icon-edit', 'label' => __('Edit record'), 'href' => $editURL),
 			// array('class' => 'icon-color icon-delete', 'label' => __('Delete record'), 'href' => urldecode($deleteURL).'?model='.$modelName.'&backURL='.urlencode($backURL))
 			'delete' => $this->Html->link('', $deleteURL, array('class' => 'icon-color icon-delete', 'title' => __('Delete record')), __('Are you sure to delete this record?'))
 		);

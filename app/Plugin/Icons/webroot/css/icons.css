@@ -49,3 +49,6 @@
 .icon-color.icon-preview {
 	background-image: url("/Icons/img/preview.gif") !important;
 }
+.icon-color.icon-open-folder{
+	background-image: url("/Icons/img/open_folder.gif") !important;
+}
