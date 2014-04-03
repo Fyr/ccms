@@ -10,16 +10,15 @@ class AdminController extends AppController {
 	    $this->components = array_merge(array('Core.PCAuth', 'Table.PCTableGrid'), $this->components);
 	    $this->helpers = array_merge(array('Html', 'Table.PHTableGrid', 'Form.PHForm'), $this->helpers);
 	    
-        $this->aNavBar = array(
-            'content' => array('label' => __('Content'), 'submenu' => array(
-                array('label' => __('Static Pages'), 'href' => array('controller' => 'AdminContent', 'action' => 'index', 'Page')),
-                array('label' => __('News'), 'href' => array('controller' => 'AdminContent', 'action' => 'index', 'News')),
-            )),
-            'categories' => array('label' => __('Categories'), 'href' => array('controller' => 'AdminContent', 'action' => 'index', 'Category')),
-            'products' => array('label' => __('Products'), 'href' => '/admin/'),
-            'slider' => array('label' => __('Slider'), 'href' => array('controller' => 'AdminSlider')),
-            'settings' => array('label' => __('Settings'), 'href' => '/admin/')
-        );
+		$this->aNavBar = array(
+			'Page' => array('label' => __('Static Pages'), 'href' => array('controller' => 'AdminContent', 'action' => 'index', 'Page')),
+			'News' => array('label' => __('News'), 'href' => array('controller' => 'AdminContent', 'action' => 'index', 'News')),
+			'Category' => array('label' => __('Categories'), 'href' => array('controller' => 'AdminContent', 'action' => 'index', 'Category')),
+			'Forms' => array('label' => __('Tech.params'), 'href' => array('controller' => 'Admin', 'action' => 'index')),
+			'products' => array('label' => __('Products'), 'href' => '/admin/'),
+			'slider' => array('label' => __('Slider'), 'href' => array('controller' => 'AdminSlider')),
+			'settings' => array('label' => __('Settings'), 'href' => '/admin/')
+		);
 	}
 	
 	public function beforeFilter() {

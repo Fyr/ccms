@@ -27,9 +27,13 @@ class AdminContentController extends AdminController {
         $data = $this->PCArticle->setModel($objectType)->index();
         $this->set('objectType', $objectType);
         $this->set('objectID', $objectID);
+        
+        $this->currMenu = $objectType;
         if ($objectType == 'Subcategory' && $objectID) {
         	$this->set('category', $this->Category->findById($objectID));
+        	$this->currMenu = 'Cetegory';
         }
+        
     }
     
 	public function edit($id = 0, $objectType = '', $objectID = '') {
@@ -51,8 +55,10 @@ class AdminContentController extends AdminController {
 			return $this->redirect(($this->request->data('apply')) ? $baseRoute : array($id));
 		}
 		
+		$this->currMenu = $objectType;
 		if ($objectType == 'Subcategory' && $objectID) {
         	$this->set('category', $this->Category->findById($objectID));
+        	$this->currMenu = 'Cetegory';
         }
 	}
 }
