@@ -10,21 +10,24 @@ class ObjectTypeHelper extends AppHelper {
                 'Page' => __('Static pages'),
                 'News' => __('News'),
                 'Category' => __('Categories'),
-                'Subcategory' => __('Subcategories')
+                'Subcategory' => __('Subcategories'),
+                'Product' => __('Products')
             ), 
             'create' => array(
                 'Article' => __('Create Article'),
                 'Page' => __('Create Static page'),
                 'News' => __('Create News article'),
                 'Category' => __('Create Category'),
-                'Subcategory' => __('Create Subcategory')
+                'Subcategory' => __('Create Subcategory'),
+                'Product' => __('Create Product')
             ),
             'edit' => array(
                 'Article' => __('Edit Article'),
                 'Page' => __('Edit Static page'),
                 'News' => __('Edit News article'),
                 'Category' => __('Edit Category'),
-                'Subcategory' => __('Edit Subcategory')
+                'Subcategory' => __('Edit Subcategory'),
+                'Product' => __('Edit Product')
             )
         );
         return $Titles;
@@ -35,7 +38,7 @@ class ObjectTypeHelper extends AppHelper {
         return (isset($aTitles[$action][$objectType])) ? $aTitles[$action][$objectType] : $aTitles[$action]['Article'];
     }
     
-    public function getBaseURL($objectType, $objectID) {
+    public function getBaseURL($objectType, $objectID = '') {
         return $this->Html->url(array('action' => 'index', $objectType, $objectID));
     }
 }

@@ -30,4 +30,15 @@ class AppModel extends Model {
 		}
 		return $query;
 	}
+	
+	public function getOptions($objectType = '', $objectID = '') {
+		$conditions = array();
+		if ($objectType) {
+			$conditions[$this->alias.'.object_type'] = $objectType;
+		}
+		if ($objectID) {
+			$conditions[$this->alias.'.object_id'] = $objectID;
+		}
+		return $this->find('list', compact('conditions'));
+	}
 }

@@ -1,15 +1,15 @@
 <?
 App::uses('Article', 'Article.Model');
-class Subcategory extends Article {
-	
-	var $belongsTo = array(
+class Product extends Article {
+	/*
+	var $hasOne = array(
 		'Category' => array(
 			'foreignKey' => 'object_id',
 			'dependent' => true
 		)
 	);
-
-	protected $objectType = 'Subcategory';
+*/
+	protected $objectType = 'Product';
 	
 	/*
 	public $belongsTo = array(

@@ -105,7 +105,7 @@ class PCTableGridComponent extends Component {
 
 	private function _getColumn($field) {
 		$key = $this->_denormalizeField($field);
-		$label = __(ucfirst($key['field']));
+		$label = __(ucfirst(str_replace('_', ' ', $key['field'])));
 		return array('key' => $field, 'label' => $label, 'format' => $this->_getFieldType($field));
 	}
 
@@ -143,13 +143,14 @@ class PCTableGridComponent extends Component {
 		$this->_initDefaults();
 		// $this->_initConditions();
 		
-		$this->Paginator->settings = array($modelName => $this->paginate); // force to load our settings into Paginator
+		// $this->Paginator->settings = array($modelName => $this->paginate); // force to load our settings into Paginator
 		// $this->_->paginate = array($modelName => $this->paginate);
+		$this->_->paginate[$modelName] = $this->paginate;
 		// fdebug($this->paginate, 'paginate.log');
 		$filters = ($filters) ? $filters : $this->_->params['named'];
 		$this->setFilter($filters);
-		$aRowset = $this->Paginator->paginate($modelName, $this->getFilter());
-		// $aRowset = $this->_->paginate($modelName, $this->getFilter());
+		// $aRowset = $this->Paginator->paginate($modelName, $this->getFilter());
+		$aRowset = $this->_->paginate($modelName, $this->getFilter());
 		// $this->paginate[$modelName]['_rowset'] = $aRowset;
 		$_paginate = array();
 		$_paginate[$modelName] = $this->paginate;
