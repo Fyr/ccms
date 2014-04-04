@@ -1,11 +1,11 @@
 	<div>
-		<a href="#">Link 1</a> |
-		<a href="#">Link 2</a> |
-		<a href="#">Link 3</a> |
-		<a href="#">Link 4</a> |
-		<a href="#">Link 5</a> |
-		<a href="#">Link 6</a>
+		<a href="/admin/">Admin Home</a>
+<?
+	foreach($aBottomLinks as $_curr => $link) {
+		echo ' | '.$this->Html->link($link['label'], $link['href'], ($currLink == strtolower($_curr)) ? array('class' => 'active') : null);
+	}
+?>
 	</div>
-	<div>
-		footer text
+	<div class="small-text">
+		<?=__('CMS Development')?> - PHPPainKiller.ru
 	</div>

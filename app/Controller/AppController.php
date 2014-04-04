@@ -2,7 +2,7 @@
 App::uses('Controller', 'Controller');
 class AppController extends Controller {
     public $paginate;
-	public $aNavBar, $currMenu;
+	public $aNavBar = array(), $aBottomLinks = array(), $currMenu, $currLink;
     
     public function __construct($request = null, $response = null) {
 	    $this->_beforeInit();
